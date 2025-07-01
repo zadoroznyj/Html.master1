@@ -15,7 +15,6 @@
       align-items: flex-start;
       min-height: 100vh;
     }
-
     .form-container {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
@@ -25,22 +24,19 @@
       max-width: 480px;
       width: 100%;
     }
-
     h2 {
       text-align: center;
       margin-bottom: 28px;
       color: #333;
       font-size: 26px;
     }
-
     label {
       display: block;
       margin-bottom: 6px;
       font-weight: 600;
       color: #555;
     }
-
-    input, select {
+    input, select, textarea {
       width: 100%;
       padding: 12px 14px;
       margin-bottom: 18px;
@@ -50,13 +46,11 @@
       transition: border-color 0.3s;
       background: #fff;
     }
-
-    input:focus, select:focus {
+    input:focus, select:focus, textarea:focus {
       border-color: #8a2be2;
       outline: none;
       box-shadow: 0 0 5px rgba(138, 43, 226, 0.3);
     }
-
     .checkbox-label {
       display: flex;
       align-items: center;
@@ -64,19 +58,16 @@
       font-weight: 600;
       color: #444;
     }
-
     .checkbox-label input[type="checkbox"] {
       width: 20px;
       height: 20px;
       margin-right: 10px;
       accent-color: #8a2be2;
     }
-
-    #helpTimeContainer {
+    #helpTimeContainer, #additionalContainer {
       display: none;
       margin-bottom: 20px;
     }
-
     button {
       width: 100%;
       padding: 14px;
@@ -90,221 +81,163 @@
       transition: all 0.3s;
       box-shadow: 0 6px 16px rgba(138, 43, 226, 0.3);
     }
-
     button:hover {
       box-shadow: 0 8px 22px rgba(138, 43, 226, 0.5);
       transform: translateY(-2px);
-    }
-
-    @media (max-width: 500px) {
-      body {
-        padding: 20px 12px;
-      }
     }
   </style>
 </head>
 <body>
 
-  <form class="form-container" id="appointmentForm">
-    <h2>Запись на процедуру</h2>
+<form class="form-container" id="appointmentForm">
+  <h2>Запись на процедуру</h2>
 
-    <label for="startDateTime">Дата и время начала:</label>
-    <input type="datetime-local" id="startDateTime" required>
+  <label for="startDateTime">Дата и время начала:</label>
+  <input type="datetime-local" id="startDateTime" required>
 
-    <label for="service">Услуга:</label>
-    <select id="service" required>
-      <option value="" disabled selected>-- выберите --</option>
-      <option value="окраска">Окраска</option>
-      <option value="покраска">Покраска</option>
-      <option value="стрижка">Стрижка</option>
-      <option value="наращивание">Наращивание</option>
-      <option value="другое">Другое</option>
-    </select>
+  <label for="service">Услуга:</label>
+  <select id="service" required>
+    <option value="" disabled selected>-- выберите --</option>
+    <option value="окраска">Окраска</option>
+    <option value="покраска">Покраска</option>
+    <option value="стрижка">Стрижка</option>
+    <option value="наращивание">Наращивание</option>
+    <option value="другое">Другое</option>
+  </select>
 
-    <label for="duration">Длительность (минут):</label>
-    <input type="number" id="duration" min="1" max="480" value="60" required>
+  <label for="duration">Длительность (минут):</label>
+  <input type="number" id="duration" min="1" max="480" value="60" required>
 
-    <label for="clientName">Имя клиента:</label>
-    <input type="text" id="clientName" placeholder="Анна Смирнова" required>
+  <label for="clientName">Имя клиента:</label>
+  <input type="text" id="clientName" required>
 
-    <label for="clientPhone">Телефон:</label>
-    <input type="tel" id="clientPhone" placeholder="+7 900 123-45-67" required pattern="^\+?\d{7,15}$">
+  <label for="clientPhone">Телефон:</label>
+  <input type="tel" id="clientPhone" required>
 
-    <label class="checkbox-label">
-      <input type="checkbox" id="helpCheckbox">
-      Нужна помощь второго мастера
-    </label>
+  <label class="checkbox-label">
+    <input type="checkbox" id="helpCheckbox">
+    Нужна помощь второго мастера
+  </label>
 
-    <div id="helpTimeContainer">
-      <label for="helpStartTime">Время начала помощи:</label>
-      <select id="helpStartTime"></select>
+  <div id="helpTimeContainer">
+    <label for="helpStartTime">Время начала помощи:</label>
+    <select id="helpStartTime"></select>
 
-      <label for="helpDuration">Длительность помощи (минут):</label>
-      <input type="number" id="helpDuration" min="1" max="60" step="1" value="30">
-    </div>
+    <label for="helpDuration">Длительность помощи (минут):</label>
+    <input type="number" id="helpDuration" min="1" max="60" step="1" value="30">
+  </div>
 
-    <button type="submit">Записаться</button>
-  </form>
+  <label class="checkbox-label">
+    <input type="checkbox" id="additionalCheckbox">
+    Дополнительно
+  </label>
 
-  <script>
-    // *** Укажи здесь calendarKey для мастера (master1 или master2) ***
-    const calendarKey = "master1";  // <- подставь "master2" для второго мастера в другой форме
+  <div id="additionalContainer">
+    <label for="additionalNotes">Дополнительная заметка:</label>
+    <textarea id="additionalNotes" rows="3" placeholder="Введите заметку..."></textarea>
+  </div>
 
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbwsl5_aL457sHz56ZFYIQFCUrYa76uy2gB-oezJlyQoo174MPP-KjjZY58XjV-KgL8u/exec';
+  <button type="submit">Записаться</button>
+</form>
 
-    const startDateTimeInput = document.getElementById('startDateTime');
-    const durationInput = document.getElementById('duration');
-    const helpCheckbox = document.getElementById('helpCheckbox');
-    const helpTimeContainer = document.getElementById('helpTimeContainer');
-    const helpStartTimeSelect = document.getElementById('helpStartTime');
-    const helpDurationInput = document.getElementById('helpDuration');
-    const form = document.getElementById('appointmentForm');
+<script>
+  const form = document.getElementById('appointmentForm');
+  const startDateTimeInput = document.getElementById('startDateTime');
+  const durationInput = document.getElementById('duration');
+  const helpCheckbox = document.getElementById('helpCheckbox');
+  const helpTimeContainer = document.getElementById('helpTimeContainer');
+  const helpStartTimeSelect = document.getElementById('helpStartTime');
+  const helpDurationInput = document.getElementById('helpDuration');
+  const additionalCheckbox = document.getElementById('additionalCheckbox');
+  const additionalContainer = document.getElementById('additionalContainer');
+  const additionalNotesInput = document.getElementById('additionalNotes');
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const nameFromUrl = urlParams.get('name');
-    const phoneFromUrl = urlParams.get('phone');
+  const nameParam = new URLSearchParams(window.location.search).get("name");
+  const phoneParam = new URLSearchParams(window.location.search).get("phone");
 
-    if (nameFromUrl) document.getElementById('clientName').value = decodeURIComponent(nameFromUrl);
-    if (phoneFromUrl) document.getElementById('clientPhone').value = decodeURIComponent(phoneFromUrl);
+  if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
+  if (phoneParam) document.getElementById('clientPhone').value = decodeURIComponent(phoneParam);
 
-    function updateHelpTimes() {
-      helpStartTimeSelect.innerHTML = '';
-      const startValue = startDateTimeInput.value;
-      const durationValue = parseInt(durationInput.value, 10);
+  helpCheckbox.addEventListener('change', () => {
+    helpTimeContainer.style.display = helpCheckbox.checked ? 'block' : 'none';
+    if (helpCheckbox.checked) updateHelpTimes();
+  });
 
-      if (!startValue || isNaN(durationValue) || durationValue <= 0) return;
+  additionalCheckbox.addEventListener('change', () => {
+    additionalContainer.style.display = additionalCheckbox.checked ? 'block' : 'none';
+  });
 
-      const start = new Date(startValue);
-      const end = new Date(start.getTime() + durationValue * 60000);
-      const step = 15 * 60 * 1000; // шаг 15 минут
-      let current = new Date(start);
+  function updateHelpTimes() {
+    helpStartTimeSelect.innerHTML = '';
+    const start = new Date(startDateTimeInput.value);
+    const duration = parseInt(durationInput.value, 10);
+    if (!start || isNaN(duration)) return;
 
-      while (current < end) {
-        const option = document.createElement('option');
-        option.value = current.toISOString();
-        option.textContent = current.toTimeString().slice(0, 5);
-        helpStartTimeSelect.appendChild(option);
-        current = new Date(current.getTime() + step);
-      }
+    const end = new Date(start.getTime() + duration * 60000);
+    for (let t = new Date(start); t < end; t.setMinutes(t.getMinutes() + 15)) {
+      const option = document.createElement('option');
+      option.value = t.toISOString();
+      option.textContent = t.toTimeString().slice(0, 5);
+      helpStartTimeSelect.appendChild(option);
+    }
+  }
 
-      if (helpStartTimeSelect.options.length > 0) {
-        helpStartTimeSelect.selectedIndex = 0;
-        helpStartTimeSelect.dispatchEvent(new Event('change'));
-      }
+  helpStartTimeSelect.addEventListener('change', () => {
+    const mainStart = new Date(startDateTimeInput.value);
+    const mainEnd = new Date(mainStart.getTime() + parseInt(durationInput.value) * 60000);
+    const helpStart = new Date(helpStartTimeSelect.value);
+    const max = Math.floor((mainEnd - helpStart) / 60000);
+    helpDurationInput.max = max;
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const startTime = new Date(document.getElementById('startDateTime').value);
+    const endTime = new Date(startTime.getTime() + parseInt(durationInput.value) * 60000);
+    const helpNeeded = helpCheckbox.checked;
+    const helpStart = helpStartTimeSelect.value;
+    const helpDuration = parseInt(helpDurationInput.value);
+
+    let descriptionParts = [];
+
+    if (helpNeeded) {
+      const helpStartTime = new Date(helpStart);
+      const helpEndTime = new Date(helpStartTime.getTime() + helpDuration * 60000);
+      const helpRange = `HELP ${helpStartTime.toTimeString().slice(0, 5)}-${helpEndTime.toTimeString().slice(0, 5)}`;
+      descriptionParts.push(helpRange);
     }
 
-    helpCheckbox.addEventListener('change', () => {
-      helpTimeContainer.style.display = helpCheckbox.checked ? 'block' : 'none';
-      if (helpCheckbox.checked) updateHelpTimes();
+    if (additionalCheckbox.checked && additionalNotesInput.value.trim()) {
+      descriptionParts.push(additionalNotesInput.value.trim());
+    }
+
+    const payload = new URLSearchParams({
+      title: `${document.getElementById('service').value}: ${document.getElementById('clientName').value}`,
+      description: descriptionParts.join('\n'),
+      location: document.getElementById('clientPhone').value,
+      startTime: startTime.toISOString(),
+      endTime: endTime.toISOString(),
+      calendar: "master1"
     });
 
-    startDateTimeInput.addEventListener('change', () => {
-      if (helpCheckbox.checked) updateHelpTimes();
-    });
-
-    durationInput.addEventListener('change', () => {
-      if (helpCheckbox.checked) updateHelpTimes();
-    });
-
-    helpStartTimeSelect.addEventListener('change', () => {
-      const mainStart = new Date(startDateTimeInput.value);
-      const mainDuration = parseInt(durationInput.value, 10);
-      const mainEnd = new Date(mainStart.getTime() + mainDuration * 60000);
-
-      const helpStart = new Date(helpStartTimeSelect.value);
-      let maxHelpDuration = Math.min(
-        mainDuration,
-        Math.floor((mainEnd - helpStart) / 60000)
-      );
-
-      if (maxHelpDuration < 1) maxHelpDuration = 1;
-
-      helpDurationInput.max = maxHelpDuration;
-
-      let currentVal = parseInt(helpDurationInput.value, 10);
-      if (isNaN(currentVal) || currentVal < 1) {
-        helpDurationInput.value = '';
-      } else if (currentVal > maxHelpDuration) {
-        helpDurationInput.value = maxHelpDuration;
-      }
-    });
-
-    helpDurationInput.addEventListener('input', () => {
-      // разрешаем ввод без мгновенной коррекции
-    });
-
-    helpDurationInput.addEventListener('blur', () => {
-      const max = parseInt(helpDurationInput.max, 10);
-      let val = parseInt(helpDurationInput.value, 10);
-
-      if (isNaN(val) || val < 1) {
-        helpDurationInput.value = 1;
-      } else if (val > max) {
-        helpDurationInput.value = max;
+    fetch("https://script.google.com/macros/s/AKfycbwsl5_aL457sHz56ZFYIQFCUrYa76uy2gB-oezJlyQoo174MPP-KjjZY58XjV-KgL8u/exec", {
+      method: "POST",
+      body: payload
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === "ok") {
+        alert("Запись успешно создана!");
       } else {
-        helpDurationInput.value = val;
+        alert("Ошибка: " + data.message);
       }
+    })
+    .catch(err => {
+      alert("Ошибка отправки: " + err.message);
     });
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      const phone = document.getElementById('clientPhone').value;
-      if (!/^\+?\d{7,15}$/.test(phone)) {
-        alert('Введите корректный номер телефона (от 7 до 15 цифр).');
-        return;
-      }
-
-      const startDateTime = startDateTimeInput.value;
-      const duration = parseInt(durationInput.value, 10);
-      const endDateTime = new Date(new Date(startDateTime).getTime() + duration * 60000).toISOString();
-
-      // Формируем описание, добавляем помощь если есть
-      let description = `Услуга: ${document.getElementById('service').value}\nИмя клиента: ${document.getElementById('clientName').value}\nТелефон: ${phone}`;
-
-      if (helpCheckbox.checked) {
-        const helpStart = helpStartTimeSelect.value;
-        const helpDur = parseInt(helpDurationInput.value, 10);
-        const helpStartDate = new Date(helpStart);
-        const helpEndDate = new Date(helpStartDate.getTime() + helpDur * 60000);
-
-        const helpStartStr = helpStartDate.toTimeString().slice(0, 5);
-        const helpEndStr = helpEndDate.toTimeString().slice(0, 5);
-
-        description += `\nhelp ${helpStartStr}-${helpEndStr}`;
-      }
-
-      // Формируем данные для отправки в Apps Script
-      const postData = new URLSearchParams();
-      postData.append('calendar', calendarKey);
-      postData.append('title', document.getElementById('service').value + " - " + document.getElementById('clientName').value);
-      postData.append('description', description);
-      postData.append('startTime', new Date(startDateTime).toISOString());
-      postData.append('endTime', endDateTime);
-      postData.append('location', '');
-
-      fetch(scriptUrl, {
-        method: 'POST',
-        body: postData,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-        }
-      })
-      .then(response => response.json())
-      .then(result => {
-        if (result.status === 'ok') {
-          alert('Запись успешно создана!');
-          form.reset();
-          helpTimeContainer.style.display = 'none';
-        } else {
-          alert('Ошибка создания записи: ' + result.message);
-        }
-      })
-      .catch(err => {
-        alert('Ошибка сети или сервера: ' + err);
-      });
-    });
-  </script>
+  });
+</script>
 
 </body>
 </html>
