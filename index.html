@@ -59,6 +59,7 @@
       font-size: 16px;
       transition: border-color 0.3s;
       background: #fff;
+      box-sizing: border-box;
     }
     input:focus, select:focus, textarea:focus {
       border-color: #8a2be2;
@@ -99,9 +100,11 @@
       box-shadow: 0 8px 22px rgba(138, 43, 226, 0.5);
       transform: translateY(-2px);
     }
-    /* Добавлено для отступа справа у полей Длительность и Имя клиента */
+    /* Сдвигаем правую границу этих полей влево */
     #duration, #clientName {
-      padding-right: -40px;
+      width: calc(100% - 30px);
+      margin-right: 30px;
+      box-sizing: border-box;
     }
   </style>
 </head>
