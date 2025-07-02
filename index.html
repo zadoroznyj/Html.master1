@@ -89,10 +89,17 @@
       padding: 12px 14px;
       width: 100%;
       box-sizing: border-box;
+      position: relative;
     }
-    button:hover {
+    button:hover:not(:disabled) {
       box-shadow: 0 8px 22px rgba(138, 43, 226, 0.5);
       transform: translateY(-2px);
+    }
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+      transform: none;
+      box-shadow: none;
     }
     .checkbox-label {
       display: flex;
@@ -151,6 +158,29 @@
       font-size: 19px;
       cursor: pointer;
     }
+
+    /* Спиннер */
+    .spinner {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      width: 20px;
+      height: 20px;
+      margin-top: -10px;
+      border: 3px solid rgba(255, 255, 255, 0.6);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: none;
+      pointer-events: none;
+    }
+    button.loading .spinner {
+      display: block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
@@ -202,7 +232,10 @@
     <textarea id="additionalNotes" rows="3" placeholder="Введите заметку..."></textarea>
   </div>
 
-  <button type="submit">Создать Запись</button>
+  <button type="submit" id="submitBtn">
+    Создать Запись
+    <span class="spinner"></span>
+  </button>
 </form>
 
 <div id="successModal">
@@ -228,6 +261,7 @@
   const additionalNotesInput = document.getElementById('additionalNotes');
   const startDateTimeInput = document.getElementById('startDateTime');
   const durationInput = document.getElementById('duration');
+  const submitBtn = document.getElementById('submitBtn');
 
   const iti = window.intlTelInput(phoneInput, {
     initialCountry: "ca",
@@ -279,6 +313,13 @@
       return;
     }
 
+    // Блокируем кнопку и показываем спиннер
+    submitBtn.disabled = true;
+    submitBtn.classList.add('loading');
+    submitBtn.childNodes.forEach(node => {
+      if (node.nodeType === 3) node.textContent = 'Отправка...';
+    });
+
     const phoneFormatted = iti.getNumber();
     const startTime = new Date(startDateTimeInput.value);
     const endTime = new Date(startTime.getTime() + parseInt(durationInput.value) * 60000);
@@ -321,6 +362,14 @@
     })
     .catch(err => {
       alert("Ошибка отправки: " + err.message);
+    })
+    .finally(() => {
+      // В любом случае разблокируем кнопку и возвращаем текст
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('loading');
+      submitBtn.childNodes.forEach(node => {
+        if (node.nodeType === 3) node.textContent = 'Создать Запись';
+      });
     });
   });
 
