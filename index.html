@@ -37,14 +37,14 @@
       text-align: center;
       margin-bottom: 28px;
       color: #333;
-      font-size: 28px; /* +2 от оригинала 26 */
+      font-size: 27px; /* уменьшено с 28px */
     }
     label {
       display: block;
       margin-bottom: 6px;
       font-weight: 600;
       color: #555;
-      font-size: 18px; /* +2 от оригинала 16 */
+      font-size: 18px; /* +2 от базового */
     }
     input, select, textarea {
       width: 100%;
@@ -85,7 +85,10 @@
       box-shadow: 0 6px 16px rgba(138, 43, 226, 0.3);
       transition: all 0.3s;
       border-radius: 12px;
-      font-size: 19px; /* +3 от оригинала 16 */
+      font-size: 19px; /* +3 */
+      padding: 12px 14px; /* возвращаем высоту */
+      width: 100%; /* ширина равна остальным полям */
+      box-sizing: border-box;
     }
     button:hover {
       box-shadow: 0 8px 22px rgba(138, 43, 226, 0.5);
@@ -131,11 +134,11 @@
     #successModal .modal-content h3 {
       color: #4B0082;
       margin-top: 0;
-      font-size: 23px; /* +1 от 22 */
+      font-size: 23px;
     }
     #successModal .modal-content p {
       margin: 16px 0 24px;
-      font-size: 18px; /* +1 от 17 */
+      font-size: 18px;
       color: #444;
     }
     #successModal .modal-content button {
@@ -145,7 +148,7 @@
       padding: 12px 24px;
       border: none;
       border-radius: 12px;
-      font-size: 19px; /* +2 от 17 */
+      font-size: 19px;
       cursor: pointer;
     }
   </style>
