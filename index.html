@@ -37,14 +37,14 @@
       text-align: center;
       margin-bottom: 28px;
       color: #333;
-      font-size: 27px; /* уменьшено с 28px */
+      font-size: 27px;
     }
     label {
       display: block;
       margin-bottom: 6px;
       font-weight: 600;
       color: #555;
-      font-size: 18px; /* +2 от базового */
+      font-size: 18px;
     }
     input, select, textarea {
       width: 100%;
@@ -53,7 +53,7 @@
       margin-bottom: 18px;
       border-radius: 10px;
       border: 1.5px solid #ccc;
-      font-size: 18px; /* +2 */
+      font-size: 18px;
       transition: border-color 0.3s;
       background: #fff;
       font-family: inherit;
@@ -70,7 +70,7 @@
       padding: 12px 14px;
       border-radius: 10px;
       border: 1.5px solid #ccc;
-      font-size: 18px; /* +2 */
+      font-size: 18px;
       font-family: inherit;
       box-sizing: border-box;
       background: #fff;
@@ -85,9 +85,9 @@
       box-shadow: 0 6px 16px rgba(138, 43, 226, 0.3);
       transition: all 0.3s;
       border-radius: 12px;
-      font-size: 19px; /* +3 */
-      padding: 12px 14px; /* возвращаем высоту */
-      width: 100%; /* ширина равна остальным полям */
+      font-size: 19px;
+      padding: 12px 14px;
+      width: 100%;
       box-sizing: border-box;
     }
     button:hover {
@@ -100,7 +100,7 @@
       margin: 10px 0 16px;
       font-weight: 600;
       color: #444;
-      font-size: 18px; /* +2 */
+      font-size: 18px;
     }
     .checkbox-label input[type="checkbox"] {
       width: 20px;
@@ -331,13 +331,6 @@
     helpTimeContainer.style.display = 'none';
     additionalContainer.style.display = 'none';
     helpStartTimeSelect.innerHTML = '';
-
-    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-      window.close();
-      setTimeout(() => {
-        document.body.innerHTML = '<div style="font-family:\'Segoe UI\', sans-serif; text-align:center; padding:40px; font-size:18px; color:#555;">Спасибо за запись!</div>';
-      }, 300);
-    }
   }
 </script>
 
