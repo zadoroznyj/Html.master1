@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
   <title>Запись на процедуру</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#8a2be2" />
   <style>
     body {
       margin: 0;
@@ -189,6 +191,14 @@
     helpDurationInput.max = max;
   });
 
+  // Обновление helpStartTime при изменении основного времени или длительности
+  startDateTimeInput.addEventListener('change', () => {
+    if (helpCheckbox.checked) updateHelpTimes();
+  });
+  durationInput.addEventListener('input', () => {
+    if (helpCheckbox.checked) updateHelpTimes();
+  });
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -236,6 +246,19 @@
       alert("Ошибка отправки: " + err.message);
     });
   });
+
+  // Регистрация service worker для PWA
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => {
+          console.log('Service Worker зарегистрирован', reg);
+        })
+        .catch(err => {
+          console.error('Ошибка регистрации Service Worker:', err);
+        });
+    });
+  }
 </script>
 
 </body>
