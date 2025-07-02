@@ -159,25 +159,26 @@
       cursor: pointer;
     }
 
-    /* Спиннер */
-    .spinner {
-      position: absolute;
-      top: 50%;
-      right: 16px;
-      width: 20px;
-      height: 20px;
-      margin-top: -10px;
-      border: 3px solid rgba(255, 255, 255, 0.6);
+    /* Центрированный полноэкранный спиннер */
+    #overlaySpinner {
+      display: none;
+      position: fixed;
+      z-index: 1100;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(2px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #overlaySpinner .spinner {
+      width: 50px;
+      height: 50px;
+      border: 6px solid rgba(255, 255, 255, 0.6);
       border-top-color: white;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      display: none;
-      pointer-events: none;
     }
-    button.loading .spinner {
-      display: block;
-    }
-
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
@@ -232,11 +233,13 @@
     <textarea id="additionalNotes" rows="3" placeholder="Введите заметку..."></textarea>
   </div>
 
-  <button type="submit" id="submitBtn">
-    Создать Запись
-    <span class="spinner"></span>
-  </button>
+  <button type="submit" id="submitBtn">Создать Запись</button>
 </form>
+
+<!-- Оверлей с бегунком -->
+<div id="overlaySpinner">
+  <div class="spinner"></div>
+</div>
 
 <div id="successModal">
   <div class="modal-content">
@@ -262,6 +265,7 @@
   const startDateTimeInput = document.getElementById('startDateTime');
   const durationInput = document.getElementById('duration');
   const submitBtn = document.getElementById('submitBtn');
+  const overlaySpinner = document.getElementById('overlaySpinner');
 
   const iti = window.intlTelInput(phoneInput, {
     initialCountry: "ca",
@@ -313,12 +317,9 @@
       return;
     }
 
-    // Блокируем кнопку и показываем спиннер
+    // Показываем полноэкранный спиннер и блокируем кнопку
+    overlaySpinner.style.display = 'flex';
     submitBtn.disabled = true;
-    submitBtn.classList.add('loading');
-    submitBtn.childNodes.forEach(node => {
-      if (node.nodeType === 3) node.textContent = 'Отправка...';
-    });
 
     const phoneFormatted = iti.getNumber();
     const startTime = new Date(startDateTimeInput.value);
@@ -355,21 +356,18 @@
     .then(response => response.json())
     .then(data => {
       if (data.status === "ok") {
+        overlaySpinner.style.display = 'none';
         document.getElementById('successModal').style.display = 'flex';
       } else {
+        overlaySpinner.style.display = 'none';
         alert("Ошибка: " + data.message);
+        submitBtn.disabled = false;
       }
     })
     .catch(err => {
+      overlaySpinner.style.display = 'none';
       alert("Ошибка отправки: " + err.message);
-    })
-    .finally(() => {
-      // В любом случае разблокируем кнопку и возвращаем текст
       submitBtn.disabled = false;
-      submitBtn.classList.remove('loading');
-      submitBtn.childNodes.forEach(node => {
-        if (node.nodeType === 3) node.textContent = 'Создать Запись';
-      });
     });
   });
 
@@ -380,6 +378,7 @@
     helpTimeContainer.style.display = 'none';
     additionalContainer.style.display = 'none';
     helpStartTimeSelect.innerHTML = '';
+    submitBtn.disabled = false;
   }
 </script>
 
