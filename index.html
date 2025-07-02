@@ -4,18 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
   <title>Запись на процедуру</title>
-  
-  <!-- Иконки -->
+
   <link rel="icon" href="https://raw.githubusercontent.com/zadoroznyj/Html.master1/main/icon-192.png" sizes="192x192" type="image/png" />
   <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/zadoroznyj/Html.master1/main/icon-512.png" />
   <link rel="manifest" href="manifest.json" />
 
-  <!-- iOS Meta -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Запись" />
 
-  <!-- intl-tel-input CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.css" />
 
   <style>
@@ -62,12 +59,17 @@
       background: #fff;
       font-family: inherit;
     }
-    input[type="datetime-local"],
-    input[type="tel"] {
+    input[type="datetime-local"] {
       appearance: none;
       -webkit-appearance: none;
       -moz-appearance: none;
+    }
+    .iti {
       width: 100%;
+      margin-bottom: 18px;
+    }
+    .iti input {
+      width: 100% !important;
       padding: 12px 14px;
       border-radius: 10px;
       border: 1.5px solid #ccc;
@@ -162,7 +164,6 @@
   <button type="submit">Создать Запись</button>
 </form>
 
-<!-- intl-tel-input -->
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"></script>
 
@@ -188,6 +189,7 @@
 
   const nameParam = new URLSearchParams(window.location.search).get("name");
   const phoneParam = new URLSearchParams(window.location.search).get("phone");
+
   if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
   if (phoneParam) phoneInput.value = decodeURIComponent(phoneParam);
 
@@ -225,6 +227,7 @@
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+
     if (!iti.isValidNumber()) {
       alert("Введите корректный номер телефона.");
       return;
