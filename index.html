@@ -61,8 +61,6 @@
     }
     input[type="datetime-local"] {
       appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
     }
     .iti {
       width: 100%;
@@ -195,7 +193,10 @@
 
   helpCheckbox.addEventListener('change', () => {
     helpTimeContainer.style.display = helpCheckbox.checked ? 'block' : 'none';
-    if (helpCheckbox.checked) updateHelpTimes();
+    if (helpCheckbox.checked) {
+      updateHelpTimes();
+      updateHelpDurationLimit();
+    }
   });
 
   additionalCheckbox.addEventListener('change', () => {
@@ -217,12 +218,33 @@
     }
   }
 
-  helpStartTimeSelect.addEventListener('change', () => {
+  function updateHelpDurationLimit() {
     const mainStart = new Date(startDateTimeInput.value);
     const mainEnd = new Date(mainStart.getTime() + parseInt(durationInput.value) * 60000);
     const helpStart = new Date(helpStartTimeSelect.value);
+    if (!helpStart || isNaN(helpStart)) return;
+
     const max = Math.floor((mainEnd - helpStart) / 60000);
     helpDurationInput.max = max;
+
+    if (parseInt(helpDurationInput.value) > max) {
+      helpDurationInput.value = max;
+    }
+  }
+
+  helpStartTimeSelect.addEventListener('change', updateHelpDurationLimit);
+  helpDurationInput.addEventListener('input', updateHelpDurationLimit);
+  startDateTimeInput.addEventListener('change', () => {
+    if (helpCheckbox.checked) {
+      updateHelpTimes();
+      updateHelpDurationLimit();
+    }
+  });
+  durationInput.addEventListener('input', () => {
+    if (helpCheckbox.checked) {
+      updateHelpTimes();
+      updateHelpDurationLimit();
+    }
   });
 
   form.addEventListener('submit', (e) => {
