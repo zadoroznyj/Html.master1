@@ -285,8 +285,7 @@ phoneInput.addEventListener('input', () => {
 });
 
 const nameParam = new URLSearchParams(window.location.search).get("name");
-const phone
-  Param = new URLSearchParams(window.location.search).get("phone");
+const phoneParam = new URLSearchParams(window.location.search).get("phone");
 
 if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
 if (phoneParam) phoneInput.value = decodeURIComponent(phoneParam);
