@@ -108,8 +108,6 @@
       display: none;
       margin-bottom: 20px;
     }
-
-    /* Стили для модального окна */
     #successModal {
       display: none;
       position: fixed;
@@ -121,29 +119,30 @@
     }
     #successModal .modal-content {
       background: white;
-      padding: 24px 28px;
-      border-radius: 14px;
-      max-width: 320px;
+      padding: 28px 24px;
+      border-radius: 20px;
+      max-width: 340px;
       width: 90%;
       text-align: center;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
       font-family: 'Segoe UI', sans-serif;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
     }
     #successModal .modal-content h3 {
-      margin-top: 0;
       color: #4B0082;
+      margin-top: 0;
     }
     #successModal .modal-content p {
-      margin: 16px 0;
-      color: #333;
+      margin: 16px 0 24px;
+      font-size: 16px;
+      color: #444;
     }
     #successModal .modal-content button {
       background: linear-gradient(135deg, #8a2be2, #da70d6);
       color: white;
       font-weight: bold;
-      padding: 10px 20px;
+      padding: 12px 24px;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       font-size: 16px;
       cursor: pointer;
     }
@@ -201,12 +200,11 @@
   <button type="submit">Создать Запись</button>
 </form>
 
-<!-- Модальное окно -->
 <div id="successModal">
   <div class="modal-content">
     <h3>🎉 Запись создана!</h3>
     <p>Спасибо! Ваша запись успешно отправлена.</p>
-    <button onclick="closeModal()">ОК</button>
+    <button onclick="closeModal()">Готово</button>
   </div>
 </div>
 
@@ -241,10 +239,7 @@
 
   helpCheckbox.addEventListener('change', () => {
     helpTimeContainer.style.display = helpCheckbox.checked ? 'block' : 'none';
-    if (helpCheckbox.checked) {
-      updateHelpTimes();
-      updateHelpDurationLimit();
-    }
+    if (helpCheckbox.checked) updateHelpTimes();
   });
 
   additionalCheckbox.addEventListener('change', () => {
@@ -266,32 +261,14 @@
     }
   }
 
-  function updateHelpDurationLimit() {
+  helpStartTimeSelect.addEventListener('change', () => {
     const mainStart = new Date(startDateTimeInput.value);
     const mainEnd = new Date(mainStart.getTime() + parseInt(durationInput.value) * 60000);
     const helpStart = new Date(helpStartTimeSelect.value);
-    if (!helpStart || isNaN(helpStart)) return;
-
     const max = Math.floor((mainEnd - helpStart) / 60000);
     helpDurationInput.max = max;
-
     if (parseInt(helpDurationInput.value) > max) {
       helpDurationInput.value = max;
-    }
-  }
-
-  helpStartTimeSelect.addEventListener('change', updateHelpDurationLimit);
-  helpDurationInput.addEventListener('input', updateHelpDurationLimit);
-  startDateTimeInput.addEventListener('change', () => {
-    if (helpCheckbox.checked) {
-      updateHelpTimes();
-      updateHelpDurationLimit();
-    }
-  });
-  durationInput.addEventListener('input', () => {
-    if (helpCheckbox.checked) {
-      updateHelpTimes();
-      updateHelpDurationLimit();
     }
   });
 
@@ -351,6 +328,13 @@
 
   function closeModal() {
     document.getElementById('successModal').style.display = 'none';
+    form.reset();
+    if (window.iti && typeof window.iti.setNumber === "function") {
+      window.iti.setNumber('');
+    }
+    helpTimeContainer.style.display = 'none';
+    additionalContainer.style.display = 'none';
+
     if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
       window.close();
     }
