@@ -161,15 +161,17 @@
 
     /* Центрированный полноэкранный спиннер */
     #overlaySpinner {
-      display: none;
+      display: none; /* изначально скрыт */
       position: fixed;
       z-index: 1100;
       top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(2px);
-      display: flex;
       justify-content: center;
       align-items: center;
+    }
+    #overlaySpinner.show {
+      display: flex;
     }
     #overlaySpinner .spinner {
       width: 50px;
@@ -178,6 +180,7 @@
       border-top-color: white;
       border-radius: 50%;
       animation: spin 1s linear infinite;
+      margin: auto;
     }
     @keyframes spin {
       to { transform: rotate(360deg); }
@@ -185,8 +188,7 @@
   </style>
 </head>
 <body>
-
-<form class="form-container" id="appointmentForm">
+  <form class="form-container" id="appointmentForm" autocomplete="off" spellcheck="false">
   <h2>Запись на процедуру</h2>
 
   <label for="startDateTime">Дата и время начала:</label>
@@ -211,7 +213,7 @@
   <input type="tel" id="clientPhone" required placeholder="Введите номер телефона">
 
   <label class="checkbox-label">
-    <input type="checkbox" id="helpCheckbox">
+    <input type="checkbox" id="helpCheckbox" />
     Нужна помощь второго мастера
   </label>
 
@@ -220,11 +222,11 @@
     <select id="helpStartTime"></select>
 
     <label for="helpDuration">Длительность помощи (минут):</label>
-    <input type="number" id="helpDuration" min="1" max="60" step="1" value="30">
+    <input type="number" id="helpDuration" min="1" max="60" step="1" value="30" />
   </div>
 
   <label class="checkbox-label">
-    <input type="checkbox" id="additionalCheckbox">
+    <input type="checkbox" id="additionalCheckbox" />
     Дополнительно
   </label>
 
@@ -233,28 +235,29 @@
     <textarea id="additionalNotes" rows="3" placeholder="Введите заметку..."></textarea>
   </div>
 
-  <button type="submit" id="submitBtn">Создать Запись</button>
+  <button type="submit" id="submitButton">Создать запись</button>
 </form>
+
+<!-- Модальное окно успешной записи -->
+<div id="successModal">
+  <div class="modal-content">
+    <h3>Запись успешно создана!</h3>
+    <p>Спасибо за запись.</p>
+    <button id="doneButton">Готово</button>
+  </div>
+</div>
 
 <!-- Оверлей с бегунком -->
 <div id="overlaySpinner">
   <div class="spinner"></div>
 </div>
 
-<div id="successModal">
-  <div class="modal-content">
-    <h3>🎉 Запись создана!</h3>
-    <p>Спасибо! Ваша запись успешно отправлена.</p>
-    <button onclick="closeModal()">Готово</button>
-  </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"></script>
-
 <script>
   const form = document.getElementById('appointmentForm');
-  const phoneInput = document.getElementById('clientPhone');
+  const startDateTimeInput = document.getElementById('startDateTime');
+  const durationInput = document.getElementById('duration');
   const helpCheckbox = document.getElementById('helpCheckbox');
   const helpTimeContainer = document.getElementById('helpTimeContainer');
   const helpStartTimeSelect = document.getElementById('helpStartTime');
@@ -262,17 +265,25 @@
   const additionalCheckbox = document.getElementById('additionalCheckbox');
   const additionalContainer = document.getElementById('additionalContainer');
   const additionalNotesInput = document.getElementById('additionalNotes');
-  const startDateTimeInput = document.getElementById('startDateTime');
-  const durationInput = document.getElementById('duration');
-  const submitBtn = document.getElementById('submitBtn');
+  const phoneInput = document.getElementById('clientPhone');
+  const submitButton = document.getElementById('submitButton');
+  const successModal = document.getElementById('successModal');
+  const doneButton = document.getElementById('doneButton');
   const overlaySpinner = document.getElementById('overlaySpinner');
 
+  // intl-tel-input инициализация
   const iti = window.intlTelInput(phoneInput, {
     initialCountry: "ca",
     preferredCountries: ["ca", "lt", "us"],
     nationalMode: false,
     utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
   });
+
+  const nameParam = new URLSearchParams(window.location.search).get("name");
+  const phoneParam = new URLSearchParams(window.location.search).get("phone");
+
+  if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
+  if (phoneParam) phoneInput.value = decodeURIComponent(phoneParam);
 
   helpCheckbox.addEventListener('change', () => {
     helpTimeContainer.style.display = helpCheckbox.checked ? 'block' : 'none';
@@ -303,10 +314,18 @@
     const mainEnd = new Date(mainStart.getTime() + parseInt(durationInput.value) * 60000);
     const helpStart = new Date(helpStartTimeSelect.value);
     const max = Math.floor((mainEnd - helpStart) / 60000);
-    helpDurationInput.max = max;
-    if (parseInt(helpDurationInput.value) > max) {
-      helpDurationInput.value = max;
+    helpDurationInput.max = max > 0 ? max : 1;
+    if (helpDurationInput.value > helpDurationInput.max) {
+      helpDurationInput.value = helpDurationInput.max;
     }
+  });
+
+  durationInput.addEventListener('change', () => {
+    if (helpCheckbox.checked) updateHelpTimes();
+  });
+
+  startDateTimeInput.addEventListener('change', () => {
+    if (helpCheckbox.checked) updateHelpTimes();
   });
 
   form.addEventListener('submit', (e) => {
@@ -317,9 +336,9 @@
       return;
     }
 
-    // Показываем полноэкранный спиннер и блокируем кнопку
-    overlaySpinner.style.display = 'flex';
-    submitBtn.disabled = true;
+    // Показываем спиннер и блокируем кнопку
+    overlaySpinner.classList.add('show');
+    submitButton.disabled = true;
 
     const phoneFormatted = iti.getNumber();
     const startTime = new Date(startDateTimeInput.value);
@@ -333,7 +352,8 @@
     if (helpNeeded) {
       const helpStartTime = new Date(helpStart);
       const helpEndTime = new Date(helpStartTime.getTime() + helpDuration * 60000);
-      descriptionParts.push(`HELP ${helpStartTime.toTimeString().slice(0, 5)}-${helpEndTime.toTimeString().slice(0, 5)}`);
+      const helpRange = `HELP ${helpStartTime.toTimeString().slice(0, 5)}-${helpEndTime.toTimeString().slice(0, 5)}`;
+      descriptionParts.push(helpRange);
     }
 
     if (additionalCheckbox.checked && additionalNotesInput.value.trim()) {
@@ -355,31 +375,28 @@
     })
     .then(response => response.json())
     .then(data => {
+      overlaySpinner.classList.remove('show');
+      submitButton.disabled = false;
       if (data.status === "ok") {
-        overlaySpinner.style.display = 'none';
-        document.getElementById('successModal').style.display = 'flex';
+        successModal.style.display = 'flex';
       } else {
-        overlaySpinner.style.display = 'none';
         alert("Ошибка: " + data.message);
-        submitBtn.disabled = false;
       }
     })
     .catch(err => {
-      overlaySpinner.style.display = 'none';
+      overlaySpinner.classList.remove('show');
+      submitButton.disabled = false;
       alert("Ошибка отправки: " + err.message);
-      submitBtn.disabled = false;
     });
   });
 
-  function closeModal() {
-    document.getElementById('successModal').style.display = 'none';
+  doneButton.addEventListener('click', () => {
+    successModal.style.display = 'none';
     form.reset();
-    if (window.iti) iti.setNumber('');
+    iti.setNumber('');
     helpTimeContainer.style.display = 'none';
     additionalContainer.style.display = 'none';
-    helpStartTimeSelect.innerHTML = '';
-    submitBtn.disabled = false;
-  }
+  });
 </script>
 
 </body>
