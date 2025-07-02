@@ -3,17 +3,16 @@
   "short_name": "Запись",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#fdf0f3",
+  "background_color": "#f3f8ff",
   "theme_color": "#8a2be2",
-  "description": "Прогрессивное веб-приложение для записи на процедуру",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "https://raw.githubusercontent.com/zadoroznyj/Html.master1/main/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512.png",
+      "src": "https://raw.githubusercontent.com/zadoroznyj/Html.master1/main/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
