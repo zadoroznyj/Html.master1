@@ -50,8 +50,11 @@
       font-weight: 600;
       color: #555;
     }
-    input, select, textarea {
+
+    /* Все поля и кнопка теперь одинаковой ширины и выровнены */
+    input, select, textarea, button {
       width: 100%;
+      box-sizing: border-box;
       padding: 12px 14px;
       margin-bottom: 18px;
       border-radius: 10px;
@@ -59,13 +62,26 @@
       font-size: 16px;
       transition: border-color 0.3s;
       background: #fff;
-      box-sizing: border-box;
+      font-family: inherit;
     }
-    input:focus, select:focus, textarea:focus {
-      border-color: #8a2be2;
-      outline: none;
-      box-shadow: 0 0 5px rgba(138, 43, 226, 0.3);
+
+    button {
+      margin-bottom: 0;
+      background: linear-gradient(135deg, #8a2be2, #da70d6);
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(138, 43, 226, 0.3);
+      transition: all 0.3s;
+      border-radius: 12px;
     }
+
+    button:hover {
+      box-shadow: 0 8px 22px rgba(138, 43, 226, 0.5);
+      transform: translateY(-2px);
+    }
+
     .checkbox-label {
       display: flex;
       align-items: center;
@@ -82,29 +98,6 @@
     #helpTimeContainer, #additionalContainer {
       display: none;
       margin-bottom: 20px;
-    }
-    button {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, #8a2be2, #da70d6);
-      color: white;
-      font-size: 18px;
-      font-weight: bold;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 6px 16px rgba(138, 43, 226, 0.3);
-    }
-    button:hover {
-      box-shadow: 0 8px 22px rgba(138, 43, 226, 0.5);
-      transform: translateY(-2px);
-    }
-    /* Сдвигаем правую границу этих полей влево */
-    #duration, #clientName {
-      width: calc(100% - 30px);
-      margin-right: 30px;
-      box-sizing: border-box;
     }
   </style>
 </head>
