@@ -5,19 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
   <title>Запись на процедуру</title>
   
-  <!-- Иконки с raw-ссылками из GitHub -->
+  <!-- Иконки -->
   <link rel="icon" href="https://raw.githubusercontent.com/zadoroznyj/Html.master1/main/icon-192.png" sizes="192x192" type="image/png" />
   <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/zadoroznyj/Html.master1/main/icon-512.png" />
-  
-  <!-- Манифест для PWA -->
   <link rel="manifest" href="manifest.json" />
 
-  <!-- Метатеги для iOS standalone -->
+  <!-- iOS Meta -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Запись" />
-  
+
+  <!-- intl-tel-input CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.css" />
+
   <style>
     body {
       margin: 0;
@@ -50,8 +50,6 @@
       font-weight: 600;
       color: #555;
     }
-
-    /* Все поля и кнопка теперь одинаковой ширины и выровнены */
     input, select, textarea, button {
       width: 100%;
       box-sizing: border-box;
@@ -64,7 +62,20 @@
       background: #fff;
       font-family: inherit;
     }
-
+    input[type="datetime-local"],
+    input[type="tel"] {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1.5px solid #ccc;
+      font-size: 16px;
+      font-family: inherit;
+      box-sizing: border-box;
+      background: #fff;
+    }
     button {
       margin-bottom: 0;
       background: linear-gradient(135deg, #8a2be2, #da70d6);
@@ -76,12 +87,10 @@
       transition: all 0.3s;
       border-radius: 12px;
     }
-
     button:hover {
       box-shadow: 0 8px 22px rgba(138, 43, 226, 0.5);
       transform: translateY(-2px);
     }
-
     .checkbox-label {
       display: flex;
       align-items: center;
@@ -153,6 +162,7 @@
   <button type="submit">Создать Запись</button>
 </form>
 
+<!-- intl-tel-input -->
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"></script>
 
@@ -169,7 +179,6 @@
   const additionalNotesInput = document.getElementById('additionalNotes');
   const phoneInput = document.getElementById('clientPhone');
 
-  // intl-tel-input инициализация
   const iti = window.intlTelInput(phoneInput, {
     initialCountry: "ca",
     preferredCountries: ["ca", "lt", "us"],
@@ -179,7 +188,6 @@
 
   const nameParam = new URLSearchParams(window.location.search).get("name");
   const phoneParam = new URLSearchParams(window.location.search).get("phone");
-
   if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
   if (phoneParam) phoneInput.value = decodeURIComponent(phoneParam);
 
@@ -217,7 +225,6 @@
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-
     if (!iti.isValidNumber()) {
       alert("Введите корректный номер телефона.");
       return;
