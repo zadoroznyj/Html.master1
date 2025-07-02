@@ -8,13 +8,11 @@
   <link rel="icon" href="https://raw.githubusercontent.com/zadoroznyj/Html.master1/main/icon-192.png" sizes="192x192" type="image/png" />
   <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/zadoroznyj/Html.master1/main/icon-512.png" />
   <link rel="manifest" href="manifest.json" />
-
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Запись" />
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.css" />
-
   <style>
     body {
       margin: 0;
@@ -213,8 +211,7 @@
 
 <script>
   const form = document.getElementById('appointmentForm');
-  const startDateTimeInput = document.getElementById('startDateTime');
-  const durationInput = document.getElementById('duration');
+  const phoneInput = document.getElementById('clientPhone');
   const helpCheckbox = document.getElementById('helpCheckbox');
   const helpTimeContainer = document.getElementById('helpTimeContainer');
   const helpStartTimeSelect = document.getElementById('helpStartTime');
@@ -222,7 +219,8 @@
   const additionalCheckbox = document.getElementById('additionalCheckbox');
   const additionalContainer = document.getElementById('additionalContainer');
   const additionalNotesInput = document.getElementById('additionalNotes');
-  const phoneInput = document.getElementById('clientPhone');
+  const startDateTimeInput = document.getElementById('startDateTime');
+  const durationInput = document.getElementById('duration');
 
   const iti = window.intlTelInput(phoneInput, {
     initialCountry: "ca",
@@ -230,12 +228,6 @@
     nationalMode: false,
     utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
   });
-
-  const nameParam = new URLSearchParams(window.location.search).get("name");
-  const phoneParam = new URLSearchParams(window.location.search).get("phone");
-
-  if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
-  if (phoneParam) phoneInput.value = decodeURIComponent(phoneParam);
 
   helpCheckbox.addEventListener('change', () => {
     helpTimeContainer.style.display = helpCheckbox.checked ? 'block' : 'none';
@@ -281,7 +273,7 @@
     }
 
     const phoneFormatted = iti.getNumber();
-    const startTime = new Date(document.getElementById('startDateTime').value);
+    const startTime = new Date(startDateTimeInput.value);
     const endTime = new Date(startTime.getTime() + parseInt(durationInput.value) * 60000);
     const helpNeeded = helpCheckbox.checked;
     const helpStart = helpStartTimeSelect.value;
@@ -292,8 +284,7 @@
     if (helpNeeded) {
       const helpStartTime = new Date(helpStart);
       const helpEndTime = new Date(helpStartTime.getTime() + helpDuration * 60000);
-      const helpRange = `HELP ${helpStartTime.toTimeString().slice(0, 5)}-${helpEndTime.toTimeString().slice(0, 5)}`;
-      descriptionParts.push(helpRange);
+      descriptionParts.push(`HELP ${helpStartTime.toTimeString().slice(0, 5)}-${helpEndTime.toTimeString().slice(0, 5)}`);
     }
 
     if (additionalCheckbox.checked && additionalNotesInput.value.trim()) {
@@ -329,14 +320,16 @@
   function closeModal() {
     document.getElementById('successModal').style.display = 'none';
     form.reset();
-    if (window.iti && typeof window.iti.setNumber === "function") {
-      window.iti.setNumber('');
-    }
+    if (window.iti) iti.setNumber('');
     helpTimeContainer.style.display = 'none';
     additionalContainer.style.display = 'none';
+    helpStartTimeSelect.innerHTML = '';
 
     if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
       window.close();
+      setTimeout(() => {
+        document.body.innerHTML = '<div style="font-family:\'Segoe UI\', sans-serif; text-align:center; padding:40px; font-size:18px; color:#555;">Спасибо за запись!</div>';
+      }, 300);
     }
   }
 </script>
