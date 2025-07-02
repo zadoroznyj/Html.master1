@@ -4,8 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
   <title>Запись на процедуру</title>
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#8a2be2" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.css" />
   <style>
     body {
       margin: 0;
@@ -100,6 +99,7 @@
   <label for="service">Услуга:</label>
   <select id="service" required>
     <option value="" disabled selected>-- выберите --</option>
+    <option value="окраска">Окраска</option>
     <option value="покраска">Покраска</option>
     <option value="стрижка">Стрижка</option>
     <option value="наращивание">Наращивание</option>
@@ -113,7 +113,7 @@
   <input type="text" id="clientName" required>
 
   <label for="clientPhone">Телефон:</label>
-  <input type="tel" id="clientPhone" required>
+  <input type="tel" id="clientPhone" required placeholder="Введите номер телефона">
 
   <label class="checkbox-label">
     <input type="checkbox" id="helpCheckbox">
@@ -138,8 +138,11 @@
     <textarea id="additionalNotes" rows="3" placeholder="Введите заметку..."></textarea>
   </div>
 
-  <button type="submit">Создать Запись</button>
+  <button type="submit">Записаться</button>
 </form>
+
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"></script>
 
 <script>
   const form = document.getElementById('appointmentForm');
@@ -152,12 +155,21 @@
   const additionalCheckbox = document.getElementById('additionalCheckbox');
   const additionalContainer = document.getElementById('additionalContainer');
   const additionalNotesInput = document.getElementById('additionalNotes');
+  const phoneInput = document.getElementById('clientPhone');
+
+  // intl-tel-input инициализация
+  const iti = window.intlTelInput(phoneInput, {
+    initialCountry: "ca",
+    preferredCountries: ["ca", "lt", "us"],
+    nationalMode: false,
+    utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
+  });
 
   const nameParam = new URLSearchParams(window.location.search).get("name");
   const phoneParam = new URLSearchParams(window.location.search).get("phone");
 
   if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
-  if (phoneParam) document.getElementById('clientPhone').value = decodeURIComponent(phoneParam);
+  if (phoneParam) phoneInput.value = decodeURIComponent(phoneParam);
 
   helpCheckbox.addEventListener('change', () => {
     helpTimeContainer.style.display = helpCheckbox.checked ? 'block' : 'none';
@@ -191,17 +203,15 @@
     helpDurationInput.max = max;
   });
 
-  // Обновление helpStartTime при изменении основного времени или длительности
-  startDateTimeInput.addEventListener('change', () => {
-    if (helpCheckbox.checked) updateHelpTimes();
-  });
-  durationInput.addEventListener('input', () => {
-    if (helpCheckbox.checked) updateHelpTimes();
-  });
-
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
+    if (!iti.isValidNumber()) {
+      alert("Введите корректный номер телефона.");
+      return;
+    }
+
+    const phoneFormatted = iti.getNumber();
     const startTime = new Date(document.getElementById('startDateTime').value);
     const endTime = new Date(startTime.getTime() + parseInt(durationInput.value) * 60000);
     const helpNeeded = helpCheckbox.checked;
@@ -224,13 +234,13 @@
     const payload = new URLSearchParams({
       title: `${document.getElementById('service').value}: ${document.getElementById('clientName').value}`,
       description: descriptionParts.join('\n'),
-      location: document.getElementById('clientPhone').value,
+      location: phoneFormatted,
       startTime: startTime.toISOString(),
       endTime: endTime.toISOString(),
       calendar: "master1"
     });
 
-    fetch("https://script.google.com/macros/s/AKfycbzxAViVVAnE2Wm_MaT5T8wheiLQpEgRLR8P5PGdSTU7NDKLKrkFLNsmpCJaaXTtLcHe/exec", {
+    fetch("https://script.google.com/macros/s/AKfycbwsl5_aL457sHz56ZFYIQFCUrYa76uy2gB-oezJlyQoo174MPP-KjjZY58XjV-KgL8u/exec", {
       method: "POST",
       body: payload
     })
@@ -246,19 +256,6 @@
       alert("Ошибка отправки: " + err.message);
     });
   });
-
-  // Регистрация service worker для PWA
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(reg => {
-          console.log('Service Worker зарегистрирован', reg);
-        })
-        .catch(err => {
-          console.error('Ошибка регистрации Service Worker:', err);
-        });
-    });
-  }
 </script>
 
 </body>
