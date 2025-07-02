@@ -108,6 +108,45 @@
       display: none;
       margin-bottom: 20px;
     }
+
+    /* Стили для модального окна */
+    #successModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    #successModal .modal-content {
+      background: white;
+      padding: 24px 28px;
+      border-radius: 14px;
+      max-width: 320px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      font-family: 'Segoe UI', sans-serif;
+    }
+    #successModal .modal-content h3 {
+      margin-top: 0;
+      color: #4B0082;
+    }
+    #successModal .modal-content p {
+      margin: 16px 0;
+      color: #333;
+    }
+    #successModal .modal-content button {
+      background: linear-gradient(135deg, #8a2be2, #da70d6);
+      color: white;
+      font-weight: bold;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -161,6 +200,15 @@
 
   <button type="submit">Создать Запись</button>
 </form>
+
+<!-- Модальное окно -->
+<div id="successModal">
+  <div class="modal-content">
+    <h3>🎉 Запись создана!</h3>
+    <p>Спасибо! Ваша запись успешно отправлена.</p>
+    <button onclick="closeModal()">ОК</button>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"></script>
@@ -291,7 +339,7 @@
     .then(response => response.json())
     .then(data => {
       if (data.status === "ok") {
-        alert("Запись успешно создана!");
+        document.getElementById('successModal').style.display = 'flex';
       } else {
         alert("Ошибка: " + data.message);
       }
@@ -300,6 +348,13 @@
       alert("Ошибка отправки: " + err.message);
     });
   });
+
+  function closeModal() {
+    document.getElementById('successModal').style.display = 'none';
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+      window.close();
+    }
+  }
 </script>
 
 </body>
