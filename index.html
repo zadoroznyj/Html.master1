@@ -104,9 +104,8 @@
   <label for="service">Услуга:</label>
   <select id="service" required>
     <option value="" disabled selected>-- выберите --</option>
-    <option value="окраска">Окраска</option>
-    <option value="покраска">Покраска</option>
     <option value="стрижка">Стрижка</option>
+    <option value="покраска">Покраска</option>
     <option value="наращивание">Наращивание</option>
     <option value="другое">Другое</option>
   </select>
@@ -143,7 +142,7 @@
     <textarea id="additionalNotes" rows="3" placeholder="Введите заметку..."></textarea>
   </div>
 
-  <button type="submit">Записаться</button>
+  <button type="submit">Создать Запись</button>
 </form>
 
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
@@ -245,7 +244,7 @@
       calendar: "master1"
     });
 
-    fetch("https://script.google.com/macros/s/AKfycbwsl5_aL457sHz56ZFYIQFCUrYa76uy2gB-oezJlyQoo174MPP-KjjZY58XjV-KgL8u/exec", {
+    fetch("https://script.google.com/macros/s/AKfycbzxAViVVAnE2Wm_MaT5T8wheiLQpEgRLR8P5PGdSTU7NDKLKrkFLNsmpCJaaXTtLcHe/exec", {
       method: "POST",
       body: payload
     })
