@@ -26,7 +26,6 @@
       color: #000; /* дефолтный цвет текста */
     }
 
-    /* Обёртка с нужными отступами и фоном, вместо паддинга у body */
     .page-wrapper {
       padding: 40px 20px;
       min-height: 100vh;
@@ -38,9 +37,8 @@
       transition: background 0.3s, color 0.3s;
     }
 
-    /* Остальной твой CSS с минимальными изменениями */
     body.dark {
-      background-color: #14151a; /* фон для ночной темы */
+      background-color: #14151a;
       color: #ccc;
     }
     body.dark .page-wrapper {
@@ -387,10 +385,10 @@
       <input type="number" id="duration" min="1" max="480" value="60" required>
 
       <label for="clientName">Имя клиента:</label>
-      <input type="text" id="clientName" required>
+      <input type="text" id="clientName" required autocomplete="off" />
 
       <label for="clientPhone">Телефон:</label>
-      <input type="tel" id="clientPhone" required placeholder="Введите номер телефона">
+      <input type="tel" id="clientPhone" required placeholder="Введите номер телефона" autocomplete="off" />
 
       <label class="checkbox-label">
         <input type="checkbox" id="helpCheckbox" />
@@ -412,7 +410,7 @@
 
       <div id="additionalContainer">
         <label for="additionalNotes">Дополнительная заметка:</label>
-        <textarea id="additionalNotes" name="additionalNotes" rows="3" placeholder="Введите заметку..." autocomplete="off"></textarea>
+        <textarea id="additionalNotes" rows="3" placeholder="Введите заметку..." autocomplete="off"></textarea>
       </div>
 
       <button type="submit" id="submitButton">Создать запись</button>
@@ -457,114 +455,134 @@
       initialCountry: "ca",
       preferredCountries: ["ca", "lt", "us"],
       nationalMode: false,
-            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
-    });
+      utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
+});
 
-    // Показать или скрыть блок помощи второго мастера
-    helpCheckbox.addEventListener('change', () => {
-      if (helpCheckbox.checked) {
-        helpTimeContainer.classList.add('show');
-        populateHelpStartTimes();
-      } else {
-        helpTimeContainer.classList.remove('show');
-      }
-    });
+function updateHelpTimes() {
+  const startDate = new Date(startDateTimeInput.value);
+  const duration = parseInt(durationInput.value, 10);
 
-    // Показать или скрыть блок дополнительной заметки
-    additionalCheckbox.addEventListener('change', () => {
-      if (additionalCheckbox.checked) {
-        additionalContainer.classList.add('show');
-      } else {
-        additionalContainer.classList.remove('show');
-        additionalNotesInput.value = ''; // очищаем, если скрываем
-      }
-    });
+  helpStartTimeSelect.innerHTML = "";
 
-    // Заполнить выпадающий список с временем начала помощи
-    function populateHelpStartTimes() {
-      helpStartTimeSelect.innerHTML = '';
-      const startDateTime = new Date(startDateTimeInput.value);
-      if (isNaN(startDateTime)) return;
+  if (isNaN(startDate.getTime()) || isNaN(duration)) return;
 
-      for (let i = 0; i <= 120; i += 15) { // шаг 15 минут, максимум 2 часа после начала
-        const optionTime = new Date(startDateTime.getTime() + i * 60000);
-        const h = optionTime.getHours().toString().padStart(2, '0');
-        const m = optionTime.getMinutes().toString().padStart(2, '0');
-        const option = document.createElement('option');
-        option.value = `${h}:${m}`;
-        option.textContent = `${h}:${m}`;
-        helpStartTimeSelect.appendChild(option);
-      }
-    }
+  // Создаем варианты для помощи в пределах времени основной записи
+  const endDate = new Date(startDate.getTime() + duration * 60000);
 
-    // Обновляем список времени начала помощи при изменении даты/времени процедуры
-    startDateTimeInput.addEventListener('change', () => {
-      if (helpCheckbox.checked) {
-        populateHelpStartTimes();
-      }
-    });
+  // Интервал времени - с шагом 15 минут
+  let optionTime = new Date(startDate);
 
-    // Обработчик отправки формы
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+  while (optionTime < endDate) {
+    const hours = optionTime.getHours().toString().padStart(2, '0');
+    const minutes = optionTime.getMinutes().toString().padStart(2, '0');
+    const optionText = `${hours}:${minutes}`;
 
-      // Валидация телефона через intl-tel-input
-      if (!iti.isValidNumber()) {
-        alert('Пожалуйста, введите корректный номер телефона.');
-        phoneInput.focus();
-        return;
-      }
+    const option = document.createElement('option');
+    option.value = optionText;
+    option.textContent = optionText;
+    helpStartTimeSelect.appendChild(option);
 
-      // Подготовка данных записи
-      const appointmentData = {
-        startDateTime: startDateTimeInput.value,
-        service: document.getElementById('service').value,
-        duration: parseInt(durationInput.value, 10),
-        clientName: document.getElementById('clientName').value.trim(),
-        clientPhone: iti.getNumber(), // полный международный формат
-        helpNeeded: helpCheckbox.checked,
-        helpStartTime: helpCheckbox.checked ? helpStartTimeSelect.value : null,
-        helpDuration: helpCheckbox.checked ? parseInt(helpDurationInput.value, 10) : null,
-        additionalNotes: additionalCheckbox.checked ? additionalNotesInput.value.trim() : '',
-      };
+    optionTime = new Date(optionTime.getTime() + 15 * 60000);
+  }
+}
 
-      // Блокируем кнопку и показываем спиннер
-      submitButton.disabled = true;
-      overlaySpinner.classList.add('show');
+function toggleHelpTimeContainer() {
+  if (helpCheckbox.checked) {
+    helpTimeContainer.classList.add('show');
+    updateHelpTimes();
+  } else {
+    helpTimeContainer.classList.remove('show');
+  }
+}
 
-      try {
-        // Здесь должна быть логика отправки данных на сервер или в Google Apps Script
-        // Например, fetch('url', { method: 'POST', body: JSON.stringify(appointmentData) })
+function toggleAdditionalContainer() {
+  if (additionalCheckbox.checked) {
+    additionalContainer.classList.add('show');
+  } else {
+    additionalContainer.classList.remove('show');
+  }
+}
 
-        // Имитация задержки
-        await new Promise(r => setTimeout(r, 1200));
+// Обработчики событий
+startDateTimeInput.addEventListener('change', () => {
+  if (helpCheckbox.checked) {
+    updateHelpTimes();
+  }
+});
 
-        // Показать модальное окно успеха
-        successModal.style.display = 'flex';
-      } catch (error) {
-        alert('Ошибка при создании записи. Попробуйте еще раз.');
-      } finally {
-        // Разблокировать кнопку и скрыть спиннер
-        submitButton.disabled = false;
-        overlaySpinner.classList.remove('show');
-      }
-    });
+durationInput.addEventListener('input', () => {
+  if (helpCheckbox.checked) {
+    updateHelpTimes();
+  }
+});
 
-    // Закрыть модальное окно по кнопке
-    doneButton.addEventListener('click', () => {
-      successModal.style.display = 'none';
-      form.reset();
-      additionalContainer.classList.remove('show');
-      helpTimeContainer.classList.remove('show');
-      iti.setNumber('');
-    });
+helpCheckbox.addEventListener('change', toggleHelpTimeContainer);
+additionalCheckbox.addEventListener('change', toggleAdditionalContainer);
 
-    // Автозаполнение имени и телефона из контактов — пример
-    // При этом телефон не добавляется в дополнительную заметку
-    // Здесь просто добавим слушатель, если у тебя есть код автозаполнения, дополни там по аналогии:
-    // Пример, как при автозаполнении не копировать телефон в дополнительную заметку:
-    // additionalNotesInput.value = ''; // сбрасываем доп. заметки при автозаполнении клиента
+doneButton.addEventListener('click', () => {
+  successModal.style.display = 'none';
+  form.reset();
+  helpTimeContainer.classList.remove('show');
+  additionalContainer.classList.remove('show');
+  iti.setNumber('');
+});
 
-  </script>
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  // Валидация номера телефона
+  if (!iti.isValidNumber()) {
+    alert('Пожалуйста, введите корректный номер телефона.');
+    phoneInput.focus();
+    return;
+  }
+
+  // Проверка времени начала
+  if (!startDateTimeInput.value) {
+    alert('Пожалуйста, выберите дату и время начала.');
+    startDateTimeInput.focus();
+    return;
+  }
+
+  submitButton.disabled = true;
+  overlaySpinner.classList.add('show');
+
+  const appointmentData = {
+    startDateTime: startDateTimeInput.value,
+    service: document.getElementById('service').value,
+    duration: durationInput.value,
+    clientName: document.getElementById('clientName').value.trim(),
+    clientPhone: iti.getNumber(),
+    needHelp: helpCheckbox.checked,
+    helpStartTime: helpCheckbox.checked ? helpStartTimeSelect.value : null,
+    helpDuration: helpCheckbox.checked ? helpDurationInput.value : null,
+    additionalNotes: additionalCheckbox.checked ? additionalNotesInput.value.trim() : ''
+  };
+
+  // --- Тут вставьте свой код отправки данных на сервер или в Google Script ---
+
+  // Для демонстрации — имитация задержки и успешного ответа
+  setTimeout(() => {
+    overlaySpinner.classList.remove('show');
+    submitButton.disabled = false;
+    successModal.style.display = 'flex';
+  }, 1500);
+});
+
+// Отключаем автозаполнение для поля additionalNotes при автозаполнении других данных
+// При автозаполнении клиента НЕ КОПИРУЕМ телефон в поле "Дополнительно"
+const clientNameInput = document.getElementById('clientName');
+
+clientNameInput.addEventListener('input', () => {
+  // При изменении имени — НЕ меняем additionalNotes
+  // Эта функция оставлена пустой для понимания, что ничего с additionalNotes не происходит
+});
+
+// Для автозаполнения клиента и телефона (если используете свои методы) — просто НЕ заполняйте additionalNotes телефоном
+
+// Тёмная тема включение / выключение, если нужно, например, по кнопке или автоматически
+// Здесь НЕ меняем никакие стили и размеры, так как это твой готовый дизайн
+
+</script>
 </body>
 </html>
