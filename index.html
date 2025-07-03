@@ -514,17 +514,12 @@
 
       // Здесь можно отправить данные на сервер
 
-      fetch("https://script.google.com/macros/s/AKfycbzxAViVVAnE2Wm_MaT5T8wheiLQpEgRLR8P5PGdSTU7NDKLKrkFLNsmpCJaaXTtLcHe/exec", {
-  method: "POST",
-  body: payload
-})
-.then(response => response.json())
-.then(data => {
-  // ...
-})
-.catch(err => {
-  // ...
-});
+      setTimeout(() => {
+        overlaySpinner.classList.remove('show');
+        submitButton.disabled = false;
+        successModal.style.display = 'flex';
+      }, 1000);
+    });
 
     doneButton.addEventListener('click', () => {
       successModal.style.display = 'none';
@@ -550,3 +545,4 @@
   </script>
 </body>
 </html>
+Ещё раз. Номер строки, с которой мне нужно работать. Я не могу её найти просто по словам. Слишком много строк. Ещё раз. Номер строки.
