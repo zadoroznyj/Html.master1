@@ -445,7 +445,7 @@
     const phoneParam = new URLSearchParams(window.location.search).get("phone");
 
     if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
-    if (phoneParam) iti.setNumber(decodeURIComponent(phoneParam));
+    if (phoneParam) phoneInput.value = decodeURIComponent(phoneParam);
 
     helpCheckbox.addEventListener('change', () => {
       if (helpCheckbox.checked) {
@@ -488,64 +488,31 @@
     });
 
     form.addEventListener('submit', async (e) => {
-  e.preventDefault();
+      e.preventDefault();
 
-  if (!iti.isValidNumber()) {
-    alert('Введите корректный номер телефона');
-    phoneInput.focus();
-    return;
-  }
+      if (!iti.isValidNumber()) {
+        alert('Введите корректный номер телефона');
+        phoneInput.focus();
+        return;
+      }
 
-  submitButton.disabled = true;
-  overlaySpinner.classList.add('show');
+      submitButton.disabled = true;
+      overlaySpinner.classList.add('show');
 
-  // Собираем данные
-  const data = {
-    startDateTime: startDateTimeInput.value,
-    service: document.getElementById('service').value,
-    duration: durationInput.value,
-    clientName: document.getElementById('clientName').value.trim(),
-    clientPhone: iti.getNumber(),
-    helpNeeded: helpCheckbox.checked,
-    helpStartTime: helpCheckbox.checked ? helpStartTimeSelect.value : null,
-    helpDuration: helpCheckbox.checked ? helpDurationInput.value : null,
-    additionalNeeded: additionalCheckbox.checked,
-    additionalNotes: additionalCheckbox.checked ? additionalNotesInput.value.trim() : null,
-  };
+      const data = {
+        startDateTime: startDateTimeInput.value,
+        service: document.getElementById('service').value,
+        duration: durationInput.value,
+        clientName: document.getElementById('clientName').value.trim(),
+        clientPhone: iti.getNumber(),
+        helpNeeded: helpCheckbox.checked,
+        helpStartTime: helpCheckbox.checked ? helpStartTimeSelect.value : null,
+        helpDuration: helpCheckbox.checked ? helpDurationInput.value : null,
+        additionalNeeded: additionalCheckbox.checked,
+        additionalNotes: additionalCheckbox.checked ? additionalNotesInput.value.trim() : null,
+      };
 
-  // Формируем payload для Google Apps Script
-  const payload = new URLSearchParams({
-    title: `${data.service}: ${data.clientName}`,
-    description: [
-      data.helpNeeded ? `HELP ${data.helpStartTime || ''} длительностью ${data.helpDuration || ''} мин` : '',
-      data.additionalNeeded ? data.additionalNotes : ''
-    ].filter(Boolean).join('\n'),
-    location: data.clientPhone,
-    startTime: new Date(data.startDateTime).toISOString(),
-    endTime: new Date(new Date(data.startDateTime).getTime() + data.duration * 60000).toISOString(),
-    calendar: "master1"
-  });
-
-  fetch("https://script.google.com/macros/s/AKfycbzxAViVVAnE2Wm_MaT5T8wheiLQpEgRLR8P5PGdSTU7NDKLKrkFLNsmpCJaaXTtLcHe/exec", {
-    method: "POST",
-    body: payload
-  })
-  .then(response => response.json())
-  .then(data => {
-    overlaySpinner.classList.remove('show');
-    submitButton.disabled = false;
-    if (data.status === "ok") {
-      successModal.style.display = 'flex';
-    } else {
-      alert("Ошибка: " + data.message);
-    }
-  })
-  .catch(err => {
-    overlaySpinner.classList.remove('show');
-    submitButton.disabled = false;
-    alert("Ошибка отправки: " + err.message);
-  });
-});
+      // Здесь можно отправить данные на сервер
 
       setTimeout(() => {
         overlaySpinner.classList.remove('show');
