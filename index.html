@@ -457,7 +457,7 @@
       initialCountry: "ca",
       preferredCountries: ["ca", "lt", "us"],
       nationalMode: false,
-      utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
+            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
     });
 
     // Показать или скрыть блок помощи второго мастера
@@ -470,127 +470,101 @@
       }
     });
 
-    // Показать или скрыть дополнительный блок
+    // Показать или скрыть блок дополнительной заметки
     additionalCheckbox.addEventListener('change', () => {
       if (additionalCheckbox.checked) {
         additionalContainer.classList.add('show');
       } else {
         additionalContainer.classList.remove('show');
+        additionalNotesInput.value = ''; // очищаем, если скрываем
       }
     });
 
-    // Функция заполнения списка времени помощи, зависит от основного времени и длительности
+    // Заполнить выпадающий список с временем начала помощи
     function populateHelpStartTimes() {
       helpStartTimeSelect.innerHTML = '';
-      const startDateTimeValue = startDateTimeInput.value;
-      const mainDuration = parseInt(durationInput.value, 10) || 0;
+      const startDateTime = new Date(startDateTimeInput.value);
+      if (isNaN(startDateTime)) return;
 
-      if (!startDateTimeValue || mainDuration <= 0) {
-        // Нет даты или длительности — ничего не заполняем
-        return;
-      }
-
-      const startDate = new Date(startDateTimeValue);
-      for (let offset = 0; offset <= mainDuration; offset += 5) {
-        const optionTime = new Date(startDate.getTime() + offset * 60000);
-        // Формат ЧЧ:ММ
-        const hh = optionTime.getHours().toString().padStart(2, '0');
-        const mm = optionTime.getMinutes().toString().padStart(2, '0');
-        const optionText = `${hh}:${mm}`;
+      for (let i = 0; i <= 120; i += 15) { // шаг 15 минут, максимум 2 часа после начала
+        const optionTime = new Date(startDateTime.getTime() + i * 60000);
+        const h = optionTime.getHours().toString().padStart(2, '0');
+        const m = optionTime.getMinutes().toString().padStart(2, '0');
         const option = document.createElement('option');
-        option.value = optionText;
-        option.textContent = optionText;
+        option.value = `${h}:${m}`;
+        option.textContent = `${h}:${m}`;
         helpStartTimeSelect.appendChild(option);
       }
     }
 
-    // Обновляем список времени помощи при изменении основной даты/времени или длительности
+    // Обновляем список времени начала помощи при изменении даты/времени процедуры
     startDateTimeInput.addEventListener('change', () => {
       if (helpCheckbox.checked) {
         populateHelpStartTimes();
       }
     });
-    durationInput.addEventListener('input', () => {
-      if (helpCheckbox.checked) {
-        populateHelpStartTimes();
-      }
-    });
 
-    // Автозаполнение при вводе имени клиента из локального хранилища (пример)
-    clientName.addEventListener('input', () => {
-      const nameValue = clientName.value.trim();
-
-      // Если в локальном хранилище есть данные по клиенту, подставляем телефон
-      // Здесь просто пример, можно подставлять из реальной базы
-      if (nameValue === 'Иван Иванов') {
-        iti.setNumber('+37060000000');
-        // Очищаем поле дополнительной заметки, чтобы туда не попадал телефон
-        additionalNotesInput.value = '';
-      }
-    });
-
-    // Обработка отправки формы
+    // Обработчик отправки формы
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-      }
-
-      // Проверка валидности телефона через intl-tel-input
+      // Валидация телефона через intl-tel-input
       if (!iti.isValidNumber()) {
         alert('Пожалуйста, введите корректный номер телефона.');
         phoneInput.focus();
         return;
       }
 
+      // Подготовка данных записи
+      const appointmentData = {
+        startDateTime: startDateTimeInput.value,
+        service: document.getElementById('service').value,
+        duration: parseInt(durationInput.value, 10),
+        clientName: document.getElementById('clientName').value.trim(),
+        clientPhone: iti.getNumber(), // полный международный формат
+        helpNeeded: helpCheckbox.checked,
+        helpStartTime: helpCheckbox.checked ? helpStartTimeSelect.value : null,
+        helpDuration: helpCheckbox.checked ? parseInt(helpDurationInput.value, 10) : null,
+        additionalNotes: additionalCheckbox.checked ? additionalNotesInput.value.trim() : '',
+      };
+
+      // Блокируем кнопку и показываем спиннер
       submitButton.disabled = true;
       overlaySpinner.classList.add('show');
 
       try {
-        // Собираем данные формы
-        const appointmentData = {
-          startDateTime: startDateTimeInput.value,
-          service: document.getElementById('service').value,
-          duration: durationInput.value,
-          clientName: clientName.value.trim(),
-          clientPhone: iti.getNumber(),
-          helpNeeded: helpCheckbox.checked,
-          helpStartTime: helpCheckbox.checked ? helpStartTimeSelect.value : null,
-          helpDuration: helpCheckbox.checked ? helpDurationInput.value : null,
-          additionalNotes: additionalCheckbox.checked ? additionalNotesInput.value.trim() : '',
-        };
+        // Здесь должна быть логика отправки данных на сервер или в Google Apps Script
+        // Например, fetch('url', { method: 'POST', body: JSON.stringify(appointmentData) })
 
-        // Здесь можно добавить вызов API или Google Apps Script для создания записи
-        // Пример с таймаутом для имитации задержки
+        // Имитация задержки
         await new Promise(r => setTimeout(r, 1200));
 
         // Показать модальное окно успеха
         successModal.style.display = 'flex';
-        form.reset();
-        iti.setNumber('');
-        helpTimeContainer.classList.remove('show');
-        additionalContainer.classList.remove('show');
       } catch (error) {
-        alert('Произошла ошибка при создании записи. Попробуйте ещё раз.');
-        console.error(error);
+        alert('Ошибка при создании записи. Попробуйте еще раз.');
       } finally {
+        // Разблокировать кнопку и скрыть спиннер
         submitButton.disabled = false;
         overlaySpinner.classList.remove('show');
       }
     });
 
+    // Закрыть модальное окно по кнопке
     doneButton.addEventListener('click', () => {
       successModal.style.display = 'none';
+      form.reset();
+      additionalContainer.classList.remove('show');
+      helpTimeContainer.classList.remove('show');
+      iti.setNumber('');
     });
 
-    // Закрытие модального окна по клику вне контента
-    successModal.addEventListener('click', (e) => {
-      if (e.target === successModal) {
-        successModal.style.display = 'none';
-      }
-    });
+    // Автозаполнение имени и телефона из контактов — пример
+    // При этом телефон не добавляется в дополнительную заметку
+    // Здесь просто добавим слушатель, если у тебя есть код автозаполнения, дополни там по аналогии:
+    // Пример, как при автозаполнении не копировать телефон в дополнительную заметку:
+    // additionalNotesInput.value = ''; // сбрасываем доп. заметки при автозаполнении клиента
+
   </script>
 </body>
 </html>
