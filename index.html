@@ -12,71 +12,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Запись" />
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.min.css" />
-
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.css" />
   <style>
-    :root {
-      --primary-color: #8a2be2;
-      --checkbox-size: 20px;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      body {
-        background: linear-gradient(to right top, #1a1a1a, #222831, #1f1f1f);
-        color: #ddd;
-      }
-      .form-container {
-        background: #1e1e1e;
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-      }
-      label, h2 {
-        color: #ddd;
-      }
-      input, select, textarea {
-        background: #2a2a2a;
-        border: 1.5px solid #444;
-        color: #eee;
-      }
-      .checkbox-label input[type="checkbox"] {
-        appearance: none;
-        width: var(--checkbox-size);
-        height: var(--checkbox-size);
-        border: 2px solid #2a2a2a;
-        border-radius: 4px;
-        background-color: #2a2a2a;
-        display: inline-block;
-        position: relative;
-        transition: background-color 0.3s, border-color 0.3s;
-      }
-      .checkbox-label input[type="checkbox"]:checked {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-      }
-      .checkbox-label input[type="checkbox"]:checked::after {
-        content: '';
-        position: absolute;
-        left: 4px;
-        top: 1px;
-        width: 6px;
-        height: 12px;
-        border: solid white;
-        border-width: 0 2px 2px 0;
-        transform: rotate(45deg);
-      }
-      button {
-        background: linear-gradient(135deg, var(--primary-color), #da70d6);
-        color: white;
-      }
-      #successModal .modal-content {
-        background: #2a2a2a;
-        color: #fff;
-      }
-      #successModal .modal-content button {
-        background: linear-gradient(135deg, var(--primary-color), #da70d6);
-        color: white;
-      }
-    }
-
+    /* Дневная тема (исходная) */
     body {
       margin: 0;
       padding: 40px 20px;
@@ -86,6 +24,7 @@
       justify-content: center;
       align-items: flex-start;
       min-height: 100vh;
+      color: #555;
     }
     .form-container {
       background: rgba(255, 255, 255, 0.95);
@@ -95,6 +34,7 @@
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
       max-width: 480px;
       width: 100%;
+      color: #555;
     }
     h2 {
       text-align: center;
@@ -120,6 +60,7 @@
       transition: border-color 0.3s;
       background: #fff;
       font-family: inherit;
+      color: #222;
     }
     input[type="datetime-local"] {
       appearance: none;
@@ -137,10 +78,11 @@
       font-family: inherit;
       box-sizing: border-box;
       background: #fff;
+      color: #222;
     }
     button {
       margin-bottom: 0;
-      background: linear-gradient(135deg, var(--primary-color), #da70d6);
+      background: linear-gradient(135deg, #8a2be2, #da70d6);
       color: white;
       font-weight: bold;
       border: none;
@@ -164,7 +106,6 @@
       transform: none;
       box-shadow: none;
     }
-
     .checkbox-label {
       display: flex;
       align-items: center;
@@ -173,19 +114,18 @@
       color: #444;
       font-size: 18px;
     }
-    #helpTimeContainer,
-    #additionalContainer {
+    /* Чекбоксы - дневная тема */
+    .checkbox-label input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+      accent-color: #8a2be2; /* пурпурный цвет при выборе */
+    }
+    #helpTimeContainer, #additionalContainer {
       display: none;
       margin-bottom: 20px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
     }
-    #helpTimeContainer.show,
-    #additionalContainer.show {
-      display: block;
-      opacity: 1;
-    }
-        #successModal {
+    #successModal {
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -214,9 +154,20 @@
       font-size: 18px;
       color: #444;
     }
+    #successModal .modal-content button {
+      background: linear-gradient(135deg, #8a2be2, #da70d6);
+      color: white;
+      font-weight: bold;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 19px;
+      cursor: pointer;
+    }
 
+    /* Центрированный полноэкранный спиннер */
     #overlaySpinner {
-      display: none;
+      display: none; /* изначально скрыт */
       position: fixed;
       z-index: 1100;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -240,205 +191,295 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
+    /* --- Ночная тема --- */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: linear-gradient(to right top, #1a1a1a, #222222, #252525);
+        color: #ddd;
+      }
+      .form-container {
+        background: rgba(25, 25, 25, 0.95);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+        color: #ddd;
+      }
+      h2 {
+        color: #ddd;
+      }
+      label {
+        color: #ccc;
+      }
+      input, select, textarea {
+        background: #111;
+        border: 1.5px solid #444;
+        color: #eee;
+      }
+      /* intl-tel-input поле */
+      .iti input {
+        background: #111 !important;
+        border: 1.5px solid #444 !important;
+        color: #eee !important;
+      }
+      /* Кнопка: точно такой же пурпурный градиент, как в дневной теме */
+      button {
+        background: linear-gradient(135deg, #8a2be2, #da70d6);
+        color: white;
+        box-shadow: 0 6px 16px rgba(138, 43, 226, 0.3);
+      }
+      button:hover:not(:disabled) {
+        box-shadow: 0 8px 22px rgba(138, 43, 226, 0.5);
+        transform: translateY(-2px);
+      }
+      /* Чекбоксы в ночной теме: 
+         - неактивный чекбокс: цвет фона (чтобы сливались)
+         - активный чекбокс: пурпурный, такой же, как в дневной теме
+         - галочка и дизайн как в дневной теме */
+      .checkbox-label input[type="checkbox"] {
+        /* Чтобы чекбокс был цвета фона (включая рамку) */
+        background-color: #111;
+        border: 1.5px solid #111;
+        accent-color: #8a2be2; /* пурпурный при выборе */
+        width: 20px;
+        height: 20px;
+        margin-right: 10px;
+        cursor: pointer;
+      }
+      /* Модальное окно */
+      #successModal .modal-content {
+        background: #222;
+        color: #ddd;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
+      }
+      #successModal .modal-content h3 {
+        color: #da70d6;
+      }
+      #successModal .modal-content p {
+        color: #ccc;
+      }
+      #successModal .modal-content button {
+        background: linear-gradient(135deg, #8a2be2, #da70d6);
+        color: white;
+        box-shadow: 0 6px 16px rgba(138, 43, 226, 0.3);
+      }
+      /* Оверлей со спиннером */
+      #overlaySpinner {
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(3px);
+      }
+    }
   </style>
 </head>
 <body>
   <form class="form-container" id="appointmentForm" autocomplete="off" spellcheck="false">
-    <h2>Запись на процедуру</h2>
+  <h2>Запись на процедуру</h2>
 
-    <label for="startDateTime">Дата и время начала:</label>
-    <input type="datetime-local" id="startDateTime" required>
+  <label for="startDateTime">Дата и время начала:</label>
+  <input type="datetime-local" id="startDateTime" required>
 
-    <label for="service">Услуга:</label>
-    <select id="service" required>
-      <option value="" disabled selected>-- выберите --</option>
-      <option value="Стрижка">Стрижка</option>
-      <option value="Покраска">Покраска</option>
-      <option value="Наращивание">Наращивание</option>
-      <option value="Другое">Другое</option>
-    </select>
+  <label for="service">Услуга:</label>
+  <select id="service" required>
+    <option value="" disabled selected>-- выберите --</option>
+    <option value="Стрижка">Стрижка</option>
+    <option value="Покраска">Покраска</option>
+    <option value="Наращивание">Наращивание</option>
+    <option value="Другое">Другое</option>
+  </select>
 
-    <label for="duration">Длительность (минут):</label>
-    <input type="number" id="duration" min="1" max="480" value="60" required>
+  <label for="duration">Длительность (минут):</label>
+  <input type="number" id="duration" min="1" max="480" value="60" required>
 
-    <label for="clientName">Имя клиента:</label>
-    <input type="text" id="clientName" required>
+  <label for="clientName">Имя клиента:</label>
+  <input type="text" id="clientName" required>
 
-    <label for="clientPhone">Телефон:</label>
-    <input type="tel" id="clientPhone" required placeholder="Введите номер телефона">
+  <label for="clientPhone">Телефон:</label>
+  <input type="tel" id="clientPhone" required placeholder="Введите номер телефона">
 
-    <label class="checkbox-label">
-      <input type="checkbox" id="helpCheckbox" />
-      Нужна помощь второго мастера
-    </label>
+  <label class="checkbox-label">
+    <input type="checkbox" id="helpCheckbox" />
+    Нужна помощь второго мастера
+  </label>
 
-    <div id="helpTimeContainer">
-      <label for="helpStartTime">Время начала помощи:</label>
-      <select id="helpStartTime"></select>
+  <div id="helpTimeContainer">
+    <label for="helpStartTime">Время начала помощи:</label>
+    <select id="helpStartTime"></select>
 
-      <label for="helpDuration">Длительность помощи (минут):</label>
-      <input type="number" id="helpDuration" min="1" max="60" step="1" value="30" />
-    </div>
-
-    <label class="checkbox-label">
-      <input type="checkbox" id="additionalCheckbox" />
-      Дополнительно
-    </label>
-
-    <div id="additionalContainer">
-      <label for="additionalNotes">Дополнительная заметка:</label>
-      <textarea id="additionalNotes" rows="3" placeholder="Введите заметку..."></textarea>
-    </div>
-
-    <button type="submit" id="submitButton">Создать запись</button>
-  </form>
-
-  <div id="successModal">
-    <div class="modal-content">
-      <h3>Запись успешно создана!</h3>
-      <p>Спасибо за запись.</p>
-      <button id="doneButton">Готово</button>
-    </div>
+    <label for="helpDuration">Длительность помощи (минут):</label>
+    <input type="number" id="helpDuration" min="1" max="60" step="1" value="30" />
   </div>
 
-  <div id="overlaySpinner">
-    <div class="spinner"></div>
+  <label class="checkbox-label">
+    <input type="checkbox" id="additionalCheckbox" />
+    Дополнительно
+  </label>
+
+  <div id="additionalContainer">
+    <label for="additionalNotes">Дополнительная заметка:</label>
+    <textarea id="additionalNotes" rows="3" placeholder="Введите заметку..."></textarea>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"></script>
-  <script>
-    const form = document.getElementById('appointmentForm');
-    const helpCheckbox = document.getElementById('helpCheckbox');
-    const helpTimeContainer = document.getElementById('helpTimeContainer');
-    const additionalCheckbox = document.getElementById('additionalCheckbox');
-    const additionalContainer = document.getElementById('additionalContainer');
-    const submitButton = document.getElementById('submitButton');
-    const overlaySpinner = document.getElementById('overlaySpinner');
-    const successModal = document.getElementById('successModal');
-    const doneButton = document.getElementById('doneButton');
-    const phoneInput = document.getElementById('clientPhone');
-    const startDateTimeInput = document.getElementById('startDateTime');
-    const durationInput = document.getElementById('duration');
-    const helpStartTimeSelect = document.getElementById('helpStartTime');
-    const helpDurationInput = document.getElementById('helpDuration');
-    const additionalNotesInput = document.getElementById('additionalNotes');
+  <button type="submit" id="submitButton">Создать запись</button>
+</form>
 
-    const iti = window.intlTelInput(phoneInput, {
-      initialCountry: "auto",
-      preferredCountries: ["ca", "lt", "ua"],
-      nationalMode: false,
-      utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
-    });
+<!-- Модальное окно успешной записи -->
+<div id="successModal">
+  <div class="modal-content">
+    <h3>Запись успешно создана!</h3>
+    <p>Спасибо за запись.</p>
+    <button id="doneButton">Готово</button>
+  </div>
+</div>
 
-    helpCheckbox.addEventListener('change', () => {
-      helpTimeContainer.classList.toggle('show', helpCheckbox.checked);
-      if (helpCheckbox.checked) updateHelpTimes();
-    });
+<!-- Оверлей с бегунком -->
+<div id="overlaySpinner">
+  <div class="spinner"></div>
+</div>
 
-    additionalCheckbox.addEventListener('change', () => {
-      additionalContainer.classList.toggle('show', additionalCheckbox.checked);
-    });
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"></script>
+<script>
+  const form = document.getElementById('appointmentForm');
+  const startDateTimeInput = document.getElementById('startDateTime');
+  const durationInput = document.getElementById('duration');
+  const helpCheckbox = document.getElementById('helpCheckbox');
+  const helpTimeContainer = document.getElementById('helpTimeContainer');
+  const helpStartTimeSelect = document.getElementById('helpStartTime');
+  const helpDurationInput = document.getElementById('helpDuration');
+  const additionalCheckbox = document.getElementById('additionalCheckbox');
+  const additionalContainer = document.getElementById('additionalContainer');
+  const additionalNotesInput = document.getElementById('additionalNotes');
+  const phoneInput = document.getElementById('clientPhone');
+  const submitButton = document.getElementById('submitButton');
+  const successModal = document.getElementById('successModal');
+  const doneButton = document.getElementById('doneButton');
+  const overlaySpinner = document.getElementById('overlaySpinner');
 
-    function updateHelpTimes() {
-      helpStartTimeSelect.innerHTML = '';
-      const start = new Date(startDateTimeInput.value);
-      const duration = parseInt(durationInput.value, 10);
-      if (!start || isNaN(duration)) return;
+  // intl-tel-input инициализация
+  const iti = window.intlTelInput(phoneInput, {
+    initialCountry: "ca",
+    preferredCountries: ["ca", "lt", "us"],
+    nationalMode: false,
+    utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
+  });
 
-      const end = new Date(start.getTime() + duration * 60000);
-      for (let t = new Date(start); t < end; t.setMinutes(t.getMinutes() + 15)) {
-        const option = document.createElement('option');
-        option.value = t.toISOString();
-        option.textContent = t.toTimeString().slice(0, 5);
-        helpStartTimeSelect.appendChild(option);
-      }
+  const nameParam = new URLSearchParams(window.location.search).get("name");
+  const phoneParam = new URLSearchParams(window.location.search).get("phone");
+
+  if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
+  if (phoneParam) phoneInput.value = decodeURIComponent(phoneParam);
+
+  helpCheckbox.addEventListener('change', () => {
+    helpTimeContainer.style.display = helpCheckbox.checked ? 'block' : 'none';
+    if (helpCheckbox.checked) updateHelpTimes();
+  });
+
+  additionalCheckbox.addEventListener('change', () => {
+    additionalContainer.style.display = additionalCheckbox.checked ? 'block' : 'none';
+  });
+
+  function updateHelpTimes() {
+    helpStartTimeSelect.innerHTML = '';
+    const start = new Date(startDateTimeInput.value);
+    const duration = parseInt(durationInput.value, 10);
+    if (!start || isNaN(duration)) return;
+
+    const end = new Date(start.getTime() + duration * 60000);
+    for (let t = new Date(start); t < end; t.setMinutes(t.getMinutes() + 15)) {
+      const option = document.createElement('option');
+      option.value = t.toISOString();
+      option.textContent = t.toTimeString().slice(0, 5);
+      helpStartTimeSelect.appendChild(option);
+    }
+  }
+
+  helpStartTimeSelect.addEventListener('change', () => {
+    const mainStart = new Date(startDateTimeInput.value);
+    const mainEnd = new Date(mainStart.getTime() + parseInt(durationInput.value) * 60000);
+    const helpStart = new Date(helpStartTimeSelect.value);
+    const max = Math.floor((mainEnd - helpStart) / 60000);
+    helpDurationInput.max = max > 0 ? max : 1;
+    if (helpDurationInput.value > helpDurationInput.max) {
+      helpDurationInput.value = helpDurationInput.max;
+    }
+  });
+
+  durationInput.addEventListener('change', () => {
+    if (helpCheckbox.checked) updateHelpTimes();
+  });
+
+  startDateTimeInput.addEventListener('change', () => {
+    if (helpCheckbox.checked) updateHelpTimes();
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    if (!iti.isValidNumber()) {
+      alert("Введите корректный номер телефона.");
+      return;
     }
 
-    helpStartTimeSelect.addEventListener('change', () => {
-      const mainStart = new Date(startDateTimeInput.value);
-      const mainEnd = new Date(mainStart.getTime() + parseInt(durationInput.value) * 60000);
-      const helpStart = new Date(helpStartTimeSelect.value);
-      const max = Math.floor((mainEnd - helpStart) / 60000);
-      helpDurationInput.max = max > 0 ? max : 1;
-      if (helpDurationInput.value > helpDurationInput.max) {
-        helpDurationInput.value = helpDurationInput.max;
+    // Показываем спиннер и блокируем кнопку
+    overlaySpinner.classList.add('show');
+    submitButton.disabled = true;
+
+    const phoneFormatted = iti.getNumber();
+    const startTime = new Date(startDateTimeInput.value);
+    const endTime = new Date(startTime.getTime() + parseInt(durationInput.value) * 60000);
+        const helpNeeded = helpCheckbox.checked;
+    const helpStart = helpStartTimeSelect.value;
+    const helpDuration = parseInt(helpDurationInput.value);
+
+    let descriptionParts = [];
+
+    if (helpNeeded) {
+      const helpStartTime = new Date(helpStart);
+      const helpEndTime = new Date(helpStartTime.getTime() + helpDuration * 60000);
+      const helpRange = `HELP ${helpStartTime.toTimeString().slice(0, 5)}-${helpEndTime.toTimeString().slice(0, 5)}`;
+      descriptionParts.push(helpRange);
+    }
+
+    if (additionalCheckbox.checked && additionalNotesInput.value.trim()) {
+      descriptionParts.push(additionalNotesInput.value.trim());
+    }
+
+    const payload = new URLSearchParams({
+      title: `${document.getElementById('service').value}: ${document.getElementById('clientName').value}`,
+      description: descriptionParts.join('\n'),
+      location: phoneFormatted,
+      startTime: startTime.toISOString(),
+      endTime: endTime.toISOString(),
+      calendar: "master1"
+    });
+
+    fetch("https://script.google.com/macros/s/AKfycbzxAViVVAnE2Wm_MaT5T8wheiLQpEgRLR8P5PGdSTU7NDKLKrkFLNsmpCJaaXTtLcHe/exec", {
+      method: "POST",
+      body: payload
+    })
+    .then(response => response.json())
+    .then(data => {
+      overlaySpinner.classList.remove('show');
+      submitButton.disabled = false;
+      if (data.status === "ok") {
+        successModal.style.display = 'flex';
+      } else {
+        alert("Ошибка: " + data.message);
       }
+    })
+    .catch(err => {
+      overlaySpinner.classList.remove('show');
+      submitButton.disabled = false;
+      alert("Ошибка отправки: " + err.message);
     });
+  });
 
-    durationInput.addEventListener('change', () => {
-      if (helpCheckbox.checked) updateHelpTimes();
-    });
+  doneButton.addEventListener('click', () => {
+    successModal.style.display = 'none';
+    form.reset();
+    iti.setNumber('');
+    helpTimeContainer.style.display = 'none';
+    additionalContainer.style.display = 'none';
+  });
+</script>
 
-    startDateTimeInput.addEventListener('change', () => {
-      if (helpCheckbox.checked) updateHelpTimes();
-    });
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      if (!iti.isValidNumber()) {
-        alert("Введите корректный номер телефона.");
-        return;
-      }
-
-      overlaySpinner.classList.add('show');
-      submitButton.disabled = true;
-
-      const phoneFormatted = iti.getNumber();
-      const startTime = new Date(startDateTimeInput.value);
-      const endTime = new Date(startTime.getTime() + parseInt(durationInput.value) * 60000);
-      const helpNeeded = helpCheckbox.checked;
-      const helpStart = helpStartTimeSelect.value;
-      const helpDuration = parseInt(helpDurationInput.value);
-
-      let descriptionParts = [];
-      if (helpNeeded) {
-        const helpStartTime = new Date(helpStart);
-        const helpEndTime = new Date(helpStartTime.getTime() + helpDuration * 60000);
-        const helpRange = `HELP ${helpStartTime.toTimeString().slice(0, 5)}-${helpEndTime.toTimeString().slice(0, 5)}`;
-        descriptionParts.push(helpRange);
-      }
-      if (additionalCheckbox.checked && additionalNotesInput.value.trim()) {
-        descriptionParts.push(additionalNotesInput.value.trim());
-      }
-
-      const payload = new URLSearchParams({
-        title: `${document.getElementById('service').value}: ${document.getElementById('clientName').value}`,
-        description: descriptionParts.join('\n'),
-        location: phoneFormatted,
-        startTime: startTime.toISOString(),
-        endTime: endTime.toISOString(),
-        calendar: "master1"
-      });
-
-      fetch("https://script.google.com/macros/s/AKfycbzxAViVVAnE2Wm_MaT5T8wheiLQpEgRLR8P5PGdSTU7NDKLKrkFLNsmpCJaaXTtLcHe/exec", {
-        method: "POST",
-        body: payload
-      })
-      .then(response => response.json())
-      .then(data => {
-        overlaySpinner.classList.remove('show');
-        submitButton.disabled = false;
-        if (data.status === "ok") {
-          successModal.style.display = 'flex';
-        } else {
-          alert("Ошибка: " + data.message);
-        }
-      })
-      .catch(err => {
-        overlaySpinner.classList.remove('show');
-        submitButton.disabled = false;
-        alert("Ошибка отправки: " + err.message);
-      });
-    });
-
-    doneButton.addEventListener('click', () => {
-      successModal.style.display = 'none';
-      form.reset();
-      iti.setNumber('');
-      helpTimeContainer.classList.remove('show');
-      additionalContainer.classList.remove('show');
-    });
-  </script>
 </body>
 </html>
