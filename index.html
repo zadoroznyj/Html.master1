@@ -14,19 +14,17 @@
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.css" />
   <style>
-    /* --- Добавлено для устранения белых областей и оверскролла --- */
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      background-color: #fdf0f3; /* светлый фон */
+      background-color: #fdf0f3;
       overscroll-behavior-y: contain;
       -webkit-overflow-scrolling: touch;
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      color: #000; /* дефолтный цвет текста */
+      color: #000;
     }
 
-    /* Обёртка с нужными отступами и фоном, вместо паддинга у body */
     .page-wrapper {
       padding: 40px 20px;
       min-height: 100vh;
@@ -38,9 +36,8 @@
       transition: background 0.3s, color 0.3s;
     }
 
-    /* Остальной твой CSS с минимальными изменениями */
     body.dark {
-      background-color: #14151a; /* фон для ночной темы */
+      background-color: #14151a;
       color: #ccc;
     }
     body.dark .page-wrapper {
@@ -69,7 +66,7 @@
       text-align: center;
       margin-bottom: 28px;
       color: #333;
-      font-size: 27px;
+      font-size: 24px;
     }
     body.dark h2 {
       color: #ccc;
@@ -78,9 +75,9 @@
     label {
       display: block;
       margin-bottom: 6px;
-      font-weight: 600;
+      font-weight: 500;
       color: #555;
-      font-size: 18px;
+      font-size: 15px;
     }
     body.dark label {
       color: #bbb;
@@ -89,11 +86,11 @@
     input, select, textarea {
       width: 100%;
       box-sizing: border-box;
-      padding: 12px 14px;
+      padding: 10px 12px;
       margin-bottom: 18px;
       border-radius: 10px;
       border: 1.5px solid #ccc;
-      font-size: 18px;
+      font-size: 16px;
       transition: border-color 0.3s, background-color 0.3s, color 0.3s;
       background: #fff;
       font-family: 'Segoe UI', sans-serif;
@@ -121,10 +118,10 @@
     }
     .iti input {
       width: 100% !important;
-      padding: 12px 14px;
+      padding: 10px 12px;
       border-radius: 10px;
       border: 1.5px solid #ccc;
-      font-size: 18px;
+      font-size: 16px;
       font-family: inherit;
       box-sizing: border-box;
       background: #fff;
@@ -146,16 +143,18 @@
       box-shadow: 0 6px 16px rgba(138, 43, 226, 0.3);
       transition: all 0.3s;
       border-radius: 12px;
-      font-size: 19px;
-      padding: 12px 14px;
+      font-size: 17px;
+      padding: 11px 13px;
       width: 100%;
       box-sizing: border-box;
       position: relative;
     }
+
     button:hover:not(:disabled) {
       box-shadow: 0 8px 22px rgba(138, 43, 226, 0.5);
       transform: translateY(-2px);
     }
+
     button:disabled {
       cursor: not-allowed;
       opacity: 0.7;
@@ -167,23 +166,20 @@
       display: flex;
       align-items: center;
       margin: 10px 0 16px;
-      font-weight: 600;
+      font-weight: 500;
       color: #444;
-      font-size: 18px;
+      font-size: 15px;
       position: relative;
     }
     body.dark .checkbox-label {
       color: #ccc;
     }
 
-    /* === Чекбоксы дневной темы с аккуратной пурпурной галочкой === */
     .checkbox-label input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       margin-right: 10px;
       cursor: pointer;
-      -webkit-appearance: none;
-      -moz-appearance: none;
       appearance: none;
       border: 1.5px solid #ccc;
       border-radius: 6px;
@@ -191,61 +187,42 @@
       transition: background-color 0.3s, border-color 0.3s;
       background-color: white;
     }
+
     .checkbox-label input[type="checkbox"]:checked {
       background: linear-gradient(135deg, #8a2be2, #da70d6);
       border-color: transparent;
     }
+
     .checkbox-label input[type="checkbox"]:checked::after {
       content: "";
       position: absolute;
-      top: 3px;
-      left: 9px;
-      width: 6px;
-      height: 11px;
+      top: 2px;
+      left: 8px;
+      width: 5px;
+      height: 10px;
       border: solid white;
-      border-width: 0 3px 3px 0;
+      border-width: 0 2.5px 2.5px 0;
       transform: rotate(45deg);
       pointer-events: none;
     }
+
     .checkbox-label input[type="checkbox"]:focus {
       outline: 2px solid #8a2be2;
       outline-offset: 2px;
     }
 
-    /* === Чекбоксы ночной темы с аккуратной пурпурной галочкой === */
     body.dark .checkbox-label input[type="checkbox"] {
       background-color: #22232b;
       border: 1.5px solid #555;
-      border-radius: 6px;
-      width: 20px;
-      height: 20px;
-      margin-right: 10px;
-      cursor: pointer;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      position: relative;
-      transition: background-color 0.3s, border-color 0.3s;
     }
+
     body.dark .checkbox-label input[type="checkbox"]:checked {
       background: linear-gradient(135deg, #8a2be2, #da70d6);
       border-color: transparent;
     }
+
     body.dark .checkbox-label input[type="checkbox"]:checked::after {
-      content: "";
-      position: absolute;
-      top: 3px;
-      left: 9px;
-      width: 6px;
-      height: 11px;
-      border: solid white;
-      border-width: 0 3px 3px 0;
-      transform: rotate(45deg);
-      pointer-events: none;
-    }
-    body.dark .checkbox-label input[type="checkbox"]:focus {
-      outline: 2px solid #8a2be2;
-      outline-offset: 2px;
+      border-color: white;
     }
 
     #helpTimeContainer, #additionalContainer {
@@ -254,12 +231,12 @@
       opacity: 0;
       transition: opacity 0.3s ease;
     }
+
     #helpTimeContainer.show, #additionalContainer.show {
       display: block;
       opacity: 1;
     }
 
-    /* Модальное окно успешной записи */
     #successModal {
       display: none;
       position: fixed;
@@ -269,58 +246,60 @@
       align-items: center;
       justify-content: center;
     }
+
     #successModal .modal-content {
       background: white;
-      padding: 28px 24px;
+      padding: 24px 20px;
       border-radius: 20px;
       max-width: 340px;
       width: 90%;
       text-align: center;
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
     }
+
     #successModal .modal-content h3 {
       color: #4B0082;
       margin-top: 0;
-      font-size: 23px;
+      font-size: 21px;
     }
+
     #successModal .modal-content p {
-      margin: 16px 0 24px;
-      font-size: 18px;
+      margin: 14px 0 20px;
+      font-size: 15px;
       color: #444;
     }
+
     #successModal .modal-content button {
-      background: linear-gradient(135deg, #8a2be2, #da70d6);
-      color: white;
-      font-weight: bold;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 12px;
-      font-size: 19px;
-      cursor: pointer;
+      font-size: 17px;
+      padding: 10px 20px;
     }
+
     body.dark #successModal .modal-content {
       background: #22232b;
       color: #ddd;
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
     }
+
     body.dark #successModal .modal-content h3 {
       color: #da70d6;
     }
+
     body.dark #successModal .modal-content p {
       color: #ccc;
     }
+
     body.dark #successModal .modal-content button {
       background: linear-gradient(135deg, #8a2be2, #da70d6);
       box-shadow: 0 6px 16px rgba(138, 43, 226, 0.6);
       color: white;
     }
+
     body.dark #successModal .modal-content button:hover {
       box-shadow: 0 8px 22px rgba(138, 43, 226, 0.8);
     }
 
-    /* Центрированный полноэкранный спиннер */
     #overlaySpinner {
-      display: none; /* изначально скрыт */
+      display: none;
       position: fixed;
       z-index: 1100;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -329,9 +308,11 @@
       justify-content: center;
       align-items: center;
     }
+
     #overlaySpinner.show {
       display: flex;
     }
+
     #overlaySpinner .spinner {
       width: 50px;
       height: 50px;
@@ -341,28 +322,31 @@
       animation: spin 1s linear infinite;
       margin: auto;
     }
+
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
 
-    /* Для раскрывающегося списка кода страны intl-tel-input в темной теме */
     body.dark .iti__flag-container {
       background: #22232b !important;
       border: 1.5px solid #555 !important;
       border-radius: 10px !important;
     }
+
     body.dark .iti__country-list {
       background: #22232b !important;
       color: #eee !important;
       border-radius: 10px !important;
       box-shadow: 0 8px 20px rgba(0,0,0,0.8);
     }
+
     body.dark .iti__country {
       padding: 8px 14px !important;
     }
+
     body.dark .iti__country:hover {
       background-color: #8a2be2 !important;
-      color: white !important;
+          color: white !important;
     }
   </style>
 </head>
@@ -418,7 +402,6 @@
       <button type="submit" id="submitButton">Создать запись</button>
     </form>
 
-    <!-- Модальное окно успешной записи -->
     <div id="successModal">
       <div class="modal-content">
         <h3>Запись успешно создана!</h3>
@@ -427,7 +410,6 @@
       </div>
     </div>
 
-    <!-- Оверлей с бегунком -->
     <div id="overlaySpinner">
       <div class="spinner"></div>
     </div>
@@ -452,12 +434,11 @@
     const doneButton = document.getElementById('doneButton');
     const overlaySpinner = document.getElementById('overlaySpinner');
 
-    // intl-tel-input инициализация
     const iti = window.intlTelInput(phoneInput, {
       initialCountry: "ca",
       preferredCountries: ["ca", "lt", "us"],
       nationalMode: false,
-            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
+      utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
     });
 
     const nameParam = new URLSearchParams(window.location.search).get("name");
@@ -506,7 +487,6 @@
       }
     });
 
-    // Простая валидация и отправка формы
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -519,7 +499,6 @@
       submitButton.disabled = true;
       overlaySpinner.classList.add('show');
 
-      // Собираем данные
       const data = {
         startDateTime: startDateTimeInput.value,
         service: document.getElementById('service').value,
@@ -533,9 +512,8 @@
         additionalNotes: additionalCheckbox.checked ? additionalNotesInput.value.trim() : null,
       };
 
-      // Здесь можно отправить данные на сервер (fetch / AJAX)
+      // Здесь можно отправить данные на сервер
 
-      // Для демонстрации - имитируем задержку
       setTimeout(() => {
         overlaySpinner.classList.remove('show');
         submitButton.disabled = false;
@@ -551,7 +529,6 @@
       iti.setNumber('');
     });
 
-    // Автоматическое переключение темы по системным настройкам
     function applyTheme(isDark) {
       if (isDark) {
         document.body.classList.add('dark');
