@@ -23,7 +23,7 @@
       justify-content: center;
       align-items: flex-start;
       min-height: 100vh;
-      transition: background 0.5s, color 0.5s;
+      transition: background 0.3s, color 0.3s;
     }
     .form-container {
       background: rgba(255, 255, 255, 0.95);
@@ -33,15 +33,13 @@
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
       max-width: 480px;
       width: 100%;
-      color: #333;
-      transition: background 0.5s, color 0.5s;
+      transition: background 0.3s, color 0.3s, box-shadow 0.3s;
     }
     h2 {
       text-align: center;
       margin-bottom: 28px;
       color: #333;
       font-size: 27px;
-      transition: color 0.5s;
     }
     label {
       display: block;
@@ -49,7 +47,6 @@
       font-weight: 600;
       color: #555;
       font-size: 18px;
-      transition: color 0.5s;
     }
     input, select, textarea {
       width: 100%;
@@ -59,10 +56,10 @@
       border-radius: 10px;
       border: 1.5px solid #ccc;
       font-size: 18px;
-      transition: border-color 0.3s, background 0.5s, color 0.5s;
+      transition: border-color 0.3s, background-color 0.3s, color 0.3s;
       background: #fff;
       font-family: inherit;
-      color: #333;
+      color: #000;
     }
     input[type="datetime-local"] {
       appearance: none;
@@ -80,8 +77,7 @@
       font-family: inherit;
       box-sizing: border-box;
       background: #fff;
-      color: #333;
-      transition: border-color 0.3s, background 0.5s, color 0.5s;
+      color: #000;
     }
     button {
       margin-bottom: 0;
@@ -116,22 +112,21 @@
       font-weight: 600;
       color: #444;
       font-size: 18px;
-      transition: color 0.5s;
     }
+
+    /* Чекбоксы дневной темы — кастомный стиль с пурпурной галочкой */
     .checkbox-label input[type="checkbox"] {
       width: 20px;
       height: 20px;
       margin-right: 10px;
-      accent-color: #8a2be2;
       cursor: pointer;
-      /* Для тёмной темы — фон и рамка настраиваем через JS-класс body.dark */
-      border-radius: 6px;
-      transition: background-color 0.3s, border-color 0.3s;
       -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none;
-      position: relative;
       border: 1.5px solid #ccc;
+      border-radius: 6px;
+      position: relative;
+      transition: background-color 0.3s, border-color 0.3s;
       background-color: white;
     }
     .checkbox-label input[type="checkbox"]:checked {
@@ -154,20 +149,19 @@
       outline: 2px solid #8a2be2;
       outline-offset: 2px;
     }
+
     #helpTimeContainer, #additionalContainer {
       display: none;
       margin-bottom: 20px;
       opacity: 0;
       transition: opacity 0.3s ease;
-      max-height: 0;
-      overflow: hidden;
     }
     #helpTimeContainer.show, #additionalContainer.show {
       display: block;
       opacity: 1;
-      max-height: 500px; /* Достаточно большое значение для плавного раскрытия */
-      transition: opacity 0.3s ease, max-height 0.3s ease;
     }
+
+    /* Модальное окно успешной записи */
     #successModal {
       display: none;
       position: fixed;
@@ -210,7 +204,7 @@
 
     /* Центрированный полноэкранный спиннер */
     #overlaySpinner {
-      display: none;
+      display: none; /* изначально скрыт */
       position: fixed;
       z-index: 1100;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -283,6 +277,7 @@
     body.dark .checkbox-label {
       color: #ccc;
     }
+    /* Чекбоксы в темной теме */
     body.dark .checkbox-label input[type="checkbox"] {
       background-color: #22232b;
       border: 1.5px solid #555;
@@ -317,7 +312,8 @@
       outline: 2px solid #8a2be2;
       outline-offset: 2px;
     }
-    /* Для intl-tel-input выпадающих списков в темной теме */
+
+    /* Для раскрывающегося списка кода страны intl-tel-input в темной теме */
     body.dark .iti__flag-container {
       background: #22232b !important;
       border: 1.5px solid #555 !important;
@@ -340,109 +336,72 @@
 </head>
 <body>
   <form class="form-container" id="appointmentForm" autocomplete="off" spellcheck="false">
-    <h2>Запись на процедуру</h2>
+  <h2>Запись на процедуру</h2>
 
-    <label for="startDateTime">Дата и время начала:</label>
-    <input type="datetime-local" id="startDateTime" required>
+  <label for="startDateTime">Дата и время начала:</label>
+  <input type="datetime-local" id="startDateTime" required>
 
-    <label for="service">Услуга:</label>
-    <select id="service" required>
-      <option value="" disabled selected>-- выберите --</option>
-      <option value="Стрижка">Стрижка</option>
-      <option value="Покраска">Покраска</option>
-      <option value="Наращивание">Наращивание</option>
-      <option value="Другое">Другое</option>
-    </select>
+  <label for="service">Услуга:</label>
+  <select id="service" required>
+    <option value="" disabled selected>-- выберите --</option>
+    <option value="Стрижка">Стрижка</option>
+    <option value="Покраска">Покраска</option>
+    <option value="Наращивание">Наращивание</option>
+    <option value="Другое">Другое</option>
+  </select>
 
-    <label for="duration">Длительность (минут):</label>
-    <input type="number" id="duration" min="1" max="480" value="60" required>
+  <label for="duration">Длительность (минут):</label>
+  <input type="number" id="duration" min="1" max="480" value="60" required>
 
-    <label for="clientName">Имя клиента:</label>
-    <input type="text" id="clientName" required>
+  <label for="clientName">Имя клиента:</label>
+  <input type="text" id="clientName" required>
 
-    <label for="clientPhone">Телефон:</label>
-    <input type="tel" id="clientPhone" required placeholder="Введите номер телефона">
+  <label for="clientPhone">Телефон:</label>
+  <input type="tel" id="clientPhone" required placeholder="Введите номер телефона">
 
-    <label class="checkbox-label">
-      <input type="checkbox" id="helpCheckbox" />
-      Нужна помощь второго мастера
-    </label>
+  <label class="checkbox-label">
+    <input type="checkbox" id="helpCheckbox" />
+    Нужна помощь второго мастера
+  </label>
 
-    <div id="helpTimeContainer">
-      <label for="helpStartTime">Время начала помощи:</label>
-      <select id="helpStartTime"></select>
+  <div id="helpTimeContainer">
+    <label for="helpStartTime">Время начала помощи:</label>
+    <select id="helpStartTime"></select>
 
-      <label for="helpDuration">Длительность помощи (минут):</label>
-      <input type="number" id="helpDuration" min="1" max="60" step="1" value="30" />
-    </div>
-
-    <label class="checkbox-label">
-      <input type="checkbox" id="additionalCheckbox" />
-      Дополнительно
-    </label>
-
-    <div id="additionalContainer">
-      <label for="additionalNotes">Дополнительная заметка:</label>
-      <textarea id="additionalNotes" rows="3" placeholder="Введите заметку..."></textarea>
-    </div>
-
-    <button type="submit" id="submitButton">Создать запись</button>
-  </form>
-
-  <!-- Модальное окно успешной записи -->
-  <div id="successModal">
-    <div class="modal-content">
-      <h3>Запись успешно создана!</h3>
-      <p>Спасибо за запись.</p>
-      <button id="doneButton">Готово</button>
-    </div>
+    <label for="helpDuration">Длительность помощи (минут):</label>
+    <input type="number" id="helpDuration" min="1" max="60" step="1" value="30" />
   </div>
 
-  <!-- Оверлей с бегунком -->
-  <div id="overlaySpinner">
-    <div class="spinner"></div>
+  <label class="checkbox-label">
+    <input type="checkbox" id="additionalCheckbox" />
+    Дополнительно
+  </label>
+
+  <div id="additionalContainer">
+    <label for="additionalNotes">Дополнительная заметка:</label>
+    <textarea id="additionalNotes" rows="3" placeholder="Введите заметку..."></textarea>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"></script>
-  <script>
-    // Автоматическое переключение темы при загрузке и при смене системной темы
-    function applyTheme() {
-      const hour = new Date().getHours();
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const body = document.body;
+  <button type="submit" id="submitButton">Создать запись</button>
+</form>
 
-      // Определим условие: ночная тема если время с 20:00 до 6:00 или если системная тема тёмная
-      if ((hour >= 20 || hour < 6) || prefersDark) {
-        body.classList.add('dark');
-      } else {
-        body.classList.remove('dark');
-      }
-    }
-    applyTheme();
-    <script>
-  // Слушаем системное изменение темы
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-    applyTheme();
-  });
+<!-- Модальное окно успешной записи -->
+<div id="successModal">
+  <div class="modal-content">
+    <h3>Запись успешно создана!</h3>
+    <p>Спасибо за запись.</p>
+    <button id="doneButton">Готово</button>
+  </div>
+</div>
 
-  // Проверяем тему при загрузке и каждые 60 секунд
-  setInterval(applyTheme, 60000);
-  applyTheme();
+<!-- Оверлей с бегунком -->
+<div id="overlaySpinner">
+  <div class="spinner"></div>
+</div>
 
-  // Функция для автоматического выбора темы в зависимости от времени суток
-  function applyTheme() {
-    const hour = new Date().getHours();
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    // Логика: если системная тема тёмная ИЛИ время с 19 до 7 - включаем тёмную
-    // Иначе дневную
-    if (prefersDark || hour >= 19 || hour < 7) {
-      document.body.classList.add('dark');
-    } else {
-      document.body.classList.remove('dark');
-    }
-  }
-
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"></script>
+<script>
   const form = document.getElementById('appointmentForm');
   const startDateTimeInput = document.getElementById('startDateTime');
   const durationInput = document.getElementById('duration');
@@ -474,116 +433,104 @@
   if (phoneParam) phoneInput.value = decodeURIComponent(phoneParam);
 
   helpCheckbox.addEventListener('change', () => {
-    helpTimeContainer.style.display = helpCheckbox.checked ? 'block' : 'none';
-    if (helpCheckbox.checked) updateHelpTimes();
+    if (helpCheckbox.checked) {
+      helpTimeContainer.classList.add('show');
+      updateHelpTimes();
+    } else {
+      helpTimeContainer.classList.remove('show');
+    }
   });
 
   additionalCheckbox.addEventListener('change', () => {
-    additionalContainer.style.display = additionalCheckbox.checked ? 'block' : 'none';
-  });
+  if (additionalCheckbox.checked) {
+    additionalContainer.classList.add('show');
+  } else {
+    additionalContainer.classList.remove('show');
+  }
+});
 
-  function updateHelpTimes() {
-    helpStartTimeSelect.innerHTML = '';
-    const start = new Date(startDateTimeInput.value);
-    const duration = parseInt(durationInput.value, 10);
-    if (!start || isNaN(duration)) return;
+function updateHelpTimes() {
+  helpStartTimeSelect.innerHTML = '';
+  const startDate = new Date(startDateTimeInput.value);
+  if (isNaN(startDate)) return;
 
-    const end = new Date(start.getTime() + duration * 60000);
-    for (let t = new Date(start); t < end; t.setMinutes(t.getMinutes() + 15)) {
-      const option = document.createElement('option');
-      option.value = t.toISOString();
-      option.textContent = t.toTimeString().slice(0, 5);
-      helpStartTimeSelect.appendChild(option);
-    }
+  const mainDuration = parseInt(durationInput.value) || 0;
+  for (let i = 0; i <= mainDuration; i += 5) {
+    const time = new Date(startDate.getTime() + i * 60000);
+    const hh = time.getHours().toString().padStart(2, '0');
+    const mm = time.getMinutes().toString().padStart(2, '0');
+    const option = document.createElement('option');
+    option.value = `${hh}:${mm}`;
+    option.textContent = `${hh}:${mm}`;
+    helpStartTimeSelect.appendChild(option);
+  }
+}
+
+startDateTimeInput.addEventListener('change', () => {
+  if (helpCheckbox.checked) {
+    updateHelpTimes();
+  }
+});
+
+// Простая валидация и отправка формы
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  if (!iti.isValidNumber()) {
+    alert('Введите корректный номер телефона');
+    phoneInput.focus();
+    return;
   }
 
-  helpStartTimeSelect.addEventListener('change', () => {
-    const mainStart = new Date(startDateTimeInput.value);
-    const mainEnd = new Date(mainStart.getTime() + parseInt(durationInput.value, 10) * 60000);
-    const helpStart = new Date(helpStartTimeSelect.value);
-    const max = Math.floor((mainEnd - helpStart) / 60000);
-    helpDurationInput.max = max > 0 ? max : 1;
-    if (helpDurationInput.value > helpDurationInput.max) {
-      helpDurationInput.value = helpDurationInput.max;
-    }
-  });
+  submitButton.disabled = true;
+  overlaySpinner.classList.add('show');
 
-  durationInput.addEventListener('change', () => {
-    if (helpCheckbox.checked) updateHelpTimes();
-  });
+  // Собираем данные
+  const data = {
+    startDateTime: startDateTimeInput.value,
+    service: document.getElementById('service').value,
+    duration: durationInput.value,
+    clientName: document.getElementById('clientName').value.trim(),
+    clientPhone: iti.getNumber(),
+    helpNeeded: helpCheckbox.checked,
+    helpStartTime: helpCheckbox.checked ? helpStartTimeSelect.value : null,
+    helpDuration: helpCheckbox.checked ? helpDurationInput.value : null,
+    additionalNeeded: additionalCheckbox.checked,
+    additionalNotes: additionalCheckbox.checked ? additionalNotesInput.value.trim() : null,
+  };
 
-  startDateTimeInput.addEventListener('change', () => {
-    if (helpCheckbox.checked) updateHelpTimes();
-  });
+  // Здесь можно отправить данные на сервер (fetch / AJAX)
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
+  // Для демонстрации - имитируем задержку
+  setTimeout(() => {
+    overlaySpinner.classList.remove('show');
+    submitButton.disabled = false;
+    successModal.style.display = 'flex';
+  }, 1000);
+});
 
-    if (!iti.isValidNumber()) {
-      alert("Введите корректный номер телефона.");
-      return;
-    }
+doneButton.addEventListener('click', () => {
+  successModal.style.display = 'none';
+  form.reset();
+  helpTimeContainer.classList.remove('show');
+  additionalContainer.classList.remove('show');
+  iti.setNumber('');
+});
 
-    overlaySpinner.classList.add('show');
-    submitButton.disabled = true;
+// Автоматическое переключение темы по системным настройкам
+function applyTheme(isDark) {
+  if (isDark) {
+    document.body.classList.add('dark');
+  } else {
+    document.body.classList.remove('dark');
+  }
+}
 
-    const phoneFormatted = iti.getNumber();
-    const startTime = new Date(startDateTimeInput.value);
-    const endTime = new Date(startTime.getTime() + parseInt(durationInput.value, 10) * 60000);
-    const helpNeeded = helpCheckbox.checked;
-    const helpStart = helpStartTimeSelect.value;
-    const helpDuration = parseInt(helpDurationInput.value, 10);
-
-    let descriptionParts = [];
-
-    if (helpNeeded) {
-      const helpStartTime = new Date(helpStart);
-      const helpEndTime = new Date(helpStartTime.getTime() + helpDuration * 60000);
-      const helpRange = `HELP ${helpStartTime.toTimeString().slice(0, 5)}-${helpEndTime.toTimeString().slice(0, 5)}`;
-      descriptionParts.push(helpRange);
-    }
-
-    if (additionalCheckbox.checked && additionalNotesInput.value.trim()) {
-      descriptionParts.push(additionalNotesInput.value.trim());
-    }
-
-    const payload = new URLSearchParams({
-      title: `${document.getElementById('service').value}: ${document.getElementById('clientName').value}`,
-      description: descriptionParts.join('\n'),
-      location: phoneFormatted,
-      startTime: startTime.toISOString(),
-      endTime: endTime.toISOString(),
-      calendar: "master1"
-    });
-
-    fetch("https://script.google.com/macros/s/AKfycbzxAViVVAnE2Wm_MaT5T8wheiLQpEgRLR8P5PGdSTU7NDKLKrkFLNsmpCJaaXTtLcHe/exec", {
-      method: "POST",
-      body: payload
-    })
-    .then(response => response.json())
-    .then(data => {
-      overlaySpinner.classList.remove('show');
-      submitButton.disabled = false;
-      if (data.status === "ok") {
-        successModal.style.display = 'flex';
-      } else {
-        alert("Ошибка: " + data.message);
-      }
-    })
-    .catch(err => {
-      overlaySpinner.classList.remove('show');
-      submitButton.disabled = false;
-      alert("Ошибка отправки: " + err.message);
-    });
-  });
-
-  doneButton.addEventListener('click', () => {
-    successModal.style.display = 'none';
-    form.reset();
-    iti.setNumber('');
-    helpTimeContainer.style.display = 'none';
-    additionalContainer.style.display = 'none';
-  });
+const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+applyTheme(mediaQuery.matches);
+mediaQuery.addEventListener('change', e => {
+  applyTheme(e.matches);
+});
 </script>
 
 </body>
