@@ -24,6 +24,7 @@
       align-items: flex-start;
       min-height: 100vh;
       color: #333;
+      transition: background 0.3s, color 0.3s;
     }
     .form-container {
       background: rgba(255, 255, 255, 0.95);
@@ -33,6 +34,7 @@
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
       max-width: 480px;
       width: 100%;
+      transition: background 0.3s, box-shadow 0.3s;
     }
     h2 {
       text-align: center;
@@ -55,7 +57,7 @@
       border-radius: 10px;
       border: 1.5px solid #ccc;
       font-size: 18px;
-      transition: border-color 0.3s;
+      transition: border-color 0.3s, background 0.3s, color 0.3s;
       background: #fff;
       font-family: inherit;
       color: #333;
@@ -115,15 +117,43 @@
       user-select: none;
     }
     .checkbox-label input[type="checkbox"] {
+      margin-right: 10px;
+      cursor: pointer;
+      position: relative;
       width: 20px;
       height: 20px;
-      margin-right: 10px;
-      accent-color: #8a2be2;
-      cursor: pointer;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .checkbox-label input[type="checkbox"]:checked {
+      background: #8a2be2;
+      border-color: #8a2be2;
+    }
+    .checkbox-label input[type="checkbox"]:checked::after {
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: 1px;
+      width: 5px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
     }
     #helpTimeContainer, #additionalContainer {
       display: none;
       margin-bottom: 20px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    #helpTimeContainer.show, #additionalContainer.show {
+      display: block;
+      opacity: 1;
     }
     #successModal {
       display: none;
@@ -133,6 +163,9 @@
       z-index: 1000;
       align-items: center;
       justify-content: center;
+    }
+    #successModal.show {
+      display: flex;
     }
     #successModal .modal-content {
       background: white;
@@ -146,11 +179,11 @@
     }
     #successModal .modal-content h3 {
       color: #4B0082;
-      margin-top: 0;
+      margin: 0 0 16px;
       font-size: 23px;
     }
     #successModal .modal-content p {
-      margin: 16px 0 24px;
+      margin: 0 0 24px;
       font-size: 18px;
       color: #444;
     }
@@ -164,10 +197,8 @@
       font-size: 19px;
       cursor: pointer;
     }
-
-    /* Центрированный полноэкранный спиннер */
     #overlaySpinner {
-      display: none; /* изначально скрыт */
+      display: none;
       position: fixed;
       z-index: 1100;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -175,9 +206,14 @@
       backdrop-filter: blur(2px);
       justify-content: center;
       align-items: center;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
     }
     #overlaySpinner.show {
       display: flex;
+      opacity: 1;
+      pointer-events: auto;
     }
     #overlaySpinner .spinner {
       width: 50px;
@@ -186,11 +222,8 @@
       border-top-color: white;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      margin: auto;
     }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     /* Тёмная тема */
     @media (prefers-color-scheme: dark) {
@@ -220,44 +253,26 @@
       }
       button {
         background: linear-gradient(135deg, #8a2be2, #da70d6);
-        color: white;
         box-shadow: 0 6px 16px rgba(138, 43, 226, 0.9);
       }
       button:hover:not(:disabled) {
         box-shadow: 0 8px 22px rgba(138, 43, 226, 1);
       }
-      .checkbox-label {
-        color: #d8cbf9;
-      }
-      /* Чекбоксы — фон совпадает с фоном формы, чтобы не было белых квадратов */
       .checkbox-label input[type="checkbox"] {
-        background-color: #2e1c54;
+        background: #2e1c54;
         border: 2px solid #6b4bbb;
-        width: 20px;
-        height: 20px;
-        margin-right: 10px;
-        cursor: pointer;
-        accent-color: #8a2be2;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        position: relative;
-        border-radius: 4px;
-        transition: background-color 0.3s, border-color 0.3s;
       }
       .checkbox-label input[type="checkbox"]:checked {
-        background-color: #8a2be2;
+        background: #8a2be2;
         border-color: #8a2be2;
       }
       .checkbox-label input[type="checkbox"]:checked::after {
         content: "";
         position: absolute;
-        left: 6px;
-        top: 2px;
-        width: 5px;
-        height: 10px;
+        left: 5px; top: 1px;
+        width: 5px; height: 10px;
         border: solid white;
-        border-width: 0 3px 3px 0;
+        border-width: 0 2px 2px 0;
         transform: rotate(45deg);
       }
     }
@@ -288,24 +303,15 @@
     <label for="clientPhone">Телефон:</label>
     <input type="tel" id="clientPhone" required placeholder="Введите номер телефона">
 
-    <label class="checkbox-label" for="helpCheckbox">
-      <input type="checkbox" id="helpCheckbox" />
-      Нужна помощь второго мастера
-    </label>
-
+    <label class="checkbox-label"><input type="checkbox" id="helpCheckbox"> Нужна помощь второго мастера</label>
     <div id="helpTimeContainer">
       <label for="helpStartTime">Время начала помощи:</label>
       <select id="helpStartTime"></select>
-
       <label for="helpDuration">Длительность помощи (минут):</label>
-      <input type="number" id="helpDuration" min="1" max="60" step="1" value="30" />
+      <input type="number" id="helpDuration" min="1" max="60" step="1" value="30">
     </div>
 
-    <label class="checkbox-label" for="additionalCheckbox">
-      <input type="checkbox" id="additionalCheckbox" />
-      Дополнительно
-    </label>
-
+    <label class="checkbox-label"><input type="checkbox" id="additionalCheckbox"> Дополнительно</label>
     <div id="additionalContainer">
       <label for="additionalNotes">Дополнительная заметка:</label>
       <textarea id="additionalNotes" rows="3" placeholder="Введите заметку..."></textarea>
@@ -314,7 +320,6 @@
     <button type="submit" id="submitButton">Создать запись</button>
   </form>
 
-  <!-- Модальное окно успешной записи -->
   <div id="successModal">
     <div class="modal-content">
       <h3>Запись успешно создана!</h3>
@@ -323,10 +328,7 @@
     </div>
   </div>
 
-  <!-- Оверлей с бегунком -->
-  <div id="overlaySpinner">
-    <div class="spinner"></div>
-  </div>
+  <div id="overlaySpinner"><div class="spinner"></div></div>
 
   <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"></script>
@@ -335,19 +337,17 @@
     const startDateTimeInput = document.getElementById('startDateTime');
     const durationInput = document.getElementById('duration');
     const helpCheckbox = document.getElementById('helpCheckbox');
-    const helpTimeContainer = document.getElementById('helpTimeContainer');
-    const helpStartTimeSelect = document.getElementById('helpStartTime');
-    const helpDurationInput = document.getElementById('helpDuration');
     const additionalCheckbox = document.getElementById('additionalCheckbox');
+    const helpTimeContainer = document.getElementById('helpTimeContainer');
     const additionalContainer = document.getElementById('additionalContainer');
-    const additionalNotesInput = document.getElementById('additionalNotes');
+    const helpStartTime = document.getElementById('helpStartTime');
+    const helpDurationInput = document.getElementById('helpDuration');
     const phoneInput = document.getElementById('clientPhone');
     const submitButton = document.getElementById('submitButton');
     const successModal = document.getElementById('successModal');
     const doneButton = document.getElementById('doneButton');
     const overlaySpinner = document.getElementById('overlaySpinner');
 
-    // intl-tel-input инициализация
     const iti = window.intlTelInput(phoneInput, {
       initialCountry: "ca",
       preferredCountries: ["ca", "lt", "us"],
@@ -355,123 +355,101 @@
       utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
     });
 
-    const nameParam = new URLSearchParams(window.location.search).get("name");
-    const phoneParam = new URLSearchParams(window.location.search).get("phone");
-
-    if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
-    if (phoneParam) phoneInput.value = decodeURIComponent(phoneParam);
-
     helpCheckbox.addEventListener('change', () => {
-      helpTimeContainer.style.display = helpCheckbox.checked ? 'block' : 'none';
+      helpTimeContainer.classList.toggle('show', helpCheckbox.checked);
       if (helpCheckbox.checked) updateHelpTimes();
     });
-
     additionalCheckbox.addEventListener('change', () => {
-      additionalContainer.style.display = additionalCheckbox.checked ? 'block' : 'none';
+      additionalContainer.classList.toggle('show', additionalCheckbox.checked);
     });
 
     function updateHelpTimes() {
-      helpStartTimeSelect.innerHTML = '';
-      const start = new Date(startDateTimeInput.value);
-      const duration = parseInt(durationInput.value, 10);
-      if (!start || isNaN(duration)) return;
-
-      const end = new Date(start.getTime() + duration * 60000);
-      for (let t = new Date(start); t < end; t.setMinutes(t.getMinutes() + 15)) {
-        const option = document.createElement('option');
-        option.value = t.toISOString();
-        option.textContent = t.toTimeString().slice(0, 5);
-        helpStartTimeSelect.appendChild(option);
+      helpStartTime.innerHTML = '';
+      const st = new Date(startDateTimeInput.value);
+      const dur = parseInt(durationInput.value);
+      if (isNaN(st) || isNaN(dur)) return;
+      const end = new Date(st.getTime() + dur * 60000);
+      for (let t = new Date(st); t < end; t.setMinutes(t.getMinutes() + 15)) {
+        const op = document.createElement('option');
+        op.value = t.toISOString();
+        op.textContent = t.toTimeString().slice(0, 5);
+        helpStartTime.appendChild(op);
       }
     }
 
-    helpStartTimeSelect.addEventListener('change', () => {
+    helpStartTime.addEventListener('change', adjustHelpMax);
+    durationInput.addEventListener('change', () => helpCheckbox.checked && updateHelpTimes());
+    startDateTimeInput.addEventListener('change', () => helpCheckbox.checked && updateHelpTimes());
+
+    function adjustHelpMax() {
       const mainStart = new Date(startDateTimeInput.value);
       const mainEnd = new Date(mainStart.getTime() + parseInt(durationInput.value) * 60000);
-      const helpStart = new Date(helpStartTimeSelect.value);
+      const helpStart = new Date(helpStartTime.value);
       const max = Math.floor((mainEnd - helpStart) / 60000);
       helpDurationInput.max = max > 0 ? max : 1;
-      if (helpDurationInput.value > helpDurationInput.max) {
+      if (parseInt(helpDurationInput.value) > helpDurationInput.max) {
         helpDurationInput.value = helpDurationInput.max;
       }
-    });
+    }
 
-    durationInput.addEventListener('change', () => {
-      if (helpCheckbox.checked) updateHelpTimes();
-    });
-
-    startDateTimeInput.addEventListener('change', () => {
-      if (helpCheckbox.checked) updateHelpTimes();
-    });
-
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', e => {
       e.preventDefault();
-
       if (!iti.isValidNumber()) {
         alert("Введите корректный номер телефона.");
         return;
       }
-
-      // Показываем спиннер и блокируем кнопку
       overlaySpinner.classList.add('show');
       submitButton.disabled = true;
 
       const phoneFormatted = iti.getNumber();
-      const startTime = new Date(startDateTimeInput.value);
-      const endTime = new Date(startTime.getTime() + parseInt(durationInput.value) * 60000);
-      const helpNeeded = helpCheckbox.checked;
-      const helpStart = helpStartTimeSelect.value;
-      const helpDuration = parseInt(helpDurationInput.value);
-
+      const st = new Date(startDateTimeInput.value);
+      const en = new Date(st.getTime() + parseInt(durationInput.value) * 60000);
       let descriptionParts = [];
 
-      if (helpNeeded) {
-        const helpStartTime = new Date(helpStart);
-        const helpEndTime = new Date(helpStartTime.getTime() + helpDuration * 60000);
-        const helpRange = `HELP ${helpStartTime.toTimeString().slice(0, 5)}-${helpEndTime.toTimeString().slice(0, 5)}`;
-        descriptionParts.push(helpRange);
+      if (helpCheckbox.checked) {
+        const hs = new Date(helpStartTime.value);
+        const hend = new Date(hs.getTime() + parseInt(helpDurationInput.value) * 60000);
+        descriptionParts.push(`HELP ${hs.toTimeString().slice(0,5)}-${hend.toTimeString().slice(0,5)}`);
       }
-
-      if (additionalCheckbox.checked && additionalNotesInput.value.trim()) {
-        descriptionParts.push(additionalNotesInput.value.trim());
+      if (additionalCheckbox.checked && document.getElementById('additionalNotes').value.trim()) {
+        descriptionParts.push(document.getElementById('additionalNotes').value.trim());
       }
 
       const payload = new URLSearchParams({
         title: `${document.getElementById('service').value}: ${document.getElementById('clientName').value}`,
         description: descriptionParts.join('\n'),
         location: phoneFormatted,
-        startTime: startTime.toISOString(),
-        endTime: endTime.toISOString(),
+        startTime: st.toISOString(),
+        endTime: en.toISOString(),
         calendar: "master1"
       });
 
       fetch("https://script.google.com/macros/s/AKfycbzxAViVVAnE2Wm_MaT5T8wheiLQpEgRLR8P5PGdSTU7NDKLKrkFLNsmpCJaaXTtLcHe/exec", {
-  method: "POST",
-  body: payload
-})
-.then(response => response.json())
-.then(data => {
-  overlaySpinner.classList.remove('show');
-  submitButton.disabled = false;
-  if (data.status === "ok") {
-    successModal.style.display = 'flex';
-  } else {
-    alert("Ошибка: " + data.message);
-  }
-})
-.catch(err => {
-  overlaySpinner.classList.remove('show');
-  submitButton.disabled = false;
-  alert("Ошибка отправки: " + err.message);
-});
-      doneButton.addEventListener('click', () => {
-  successModal.style.display = 'none';
-  form.reset();
-  iti.setNumber('');
-  helpTimeContainer.style.display = 'none';
-  additionalContainer.style.display = 'none';
-});
-</script>
+        method: "POST",
+        body: payload
+      })
+      .then(r => r.json())
+      .then(data => {
+        overlaySpinner.classList.remove('show');
+        submitButton.disabled = false;
+        if (data.status === "ok") {
+          successModal.classList.add('show');
+        } else alert("Ошибка: " + data.message);
+      })
+      .catch(err => {
+        overlaySpinner.classList.remove('show');
+        submitButton.disabled = false;
+        alert("Ошибка отправки: " + err.message);
+      });
+    });
 
+    doneButton.addEventListener('click', () => {
+      successModal.classList.remove('show');
+      form.reset();
+      iti.setNumber('');
+      helpTimeContainer.classList.remove('show');
+      additionalContainer.classList.remove('show');
+    });
+  </script>
 </body>
 </html>
