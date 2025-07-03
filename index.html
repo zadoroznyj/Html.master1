@@ -16,13 +16,13 @@
   <style>
     /* --- Добавлено для устранения белых областей и оверскролла --- */
     html, body {
-      body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }; }
       margin: 0;
       padding: 0;
       height: 100%;
       background-color: #fdf0f3; /* светлый фон */
       overscroll-behavior-y: contain;
       -webkit-overflow-scrolling: touch;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       color: #000; /* дефолтный цвет текста */
     }
 
@@ -449,7 +449,7 @@
     const phoneInput = document.getElementById('clientPhone');
     const submitButton = document.getElementById('submitButton');
     const successModal = document.getElementById('successModal');
-        const doneButton = document.getElementById('doneButton');
+    const doneButton = document.getElementById('doneButton');
     const overlaySpinner = document.getElementById('overlaySpinner');
 
     // intl-tel-input инициализация
@@ -457,7 +457,7 @@
       initialCountry: "ca",
       preferredCountries: ["ca", "lt", "us"],
       nationalMode: false,
-      utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
+            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
     });
 
     const nameParam = new URLSearchParams(window.location.search).get("name");
@@ -566,6 +566,5 @@
       applyTheme(e.matches);
     });
   </script>
-
 </body>
 </html>
