@@ -444,8 +444,8 @@
     const nameParam = new URLSearchParams(window.location.search).get("name");
     const phoneParam = new URLSearchParams(window.location.search).get("phone");
 
-if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
-if (phoneParam) iti.setNumber(decodeURIComponent(phoneParam));  // <-- вот эта строка
+    if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
+    if (phoneParam) iti.setNumber(decodeURIComponent(phoneParam));
 
     helpCheckbox.addEventListener('change', () => {
       if (helpCheckbox.checked) {
@@ -487,7 +487,8 @@ if (phoneParam) iti.setNumber(decodeURIComponent(phoneParam));  // <-- вот э
       }
     });
 
-    form.addEventListener('submit', async (e) => {
+    // *** ЗАМЕНА НА КОД ОТПРАВКИ НА GOOGLE APPS SCRIPT ***
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
 
       if (!iti.isValidNumber()) {
@@ -499,49 +500,69 @@ if (phoneParam) iti.setNumber(decodeURIComponent(phoneParam));  // <-- вот э
       submitButton.disabled = true;
       overlaySpinner.classList.add('show');
 
-      const data = {
-        startDateTime: startDateTimeInput.value,
-        service: document.getElementById('service').value,
-        duration: durationInput.value,
-        clientName: document.getElementById('clientName').value.trim(),
-        clientPhone: iti.getNumber(),
-        helpNeeded: helpCheckbox.checked,
-        helpStartTime: helpCheckbox.checked ? helpStartTimeSelect.value : null,
-        helpDuration: helpCheckbox.checked ? helpDurationInput.value : null,
-        additionalNeeded: additionalCheckbox.checked,
-        additionalNotes: additionalCheckbox.checked ? additionalNotesInput.value.trim() : null,
-      };
+      const phoneFormatted = iti.getNumber();
+      const startTime = new Date(startDateTimeInput.value);
+      const endTime = new Date(startTime.getTime() + parseInt(durationInput.value) * 60000);
+      const helpNeeded = helpCheckbox.checked;
+const helpStart = helpStartTimeSelect.value;
+const helpDuration = parseInt(helpDurationInput.value, 10);
 
-      // Здесь можно отправить данные на сервер
+let descriptionParts = [];
 
-      setTimeout(() => {
-        overlaySpinner.classList.remove('show');
-        submitButton.disabled = false;
-        successModal.style.display = 'flex';
-      }, 1000);
-    });
+if (helpNeeded && helpStart) {
+  // Формируем время помощи в формате HH:mm и вычисляем конец помощи
+  const [helpStartH, helpStartM] = helpStart.split(':').map(Number);
+  const mainStartDate = new Date(startDateTimeInput.value);
+  const helpStartDate = new Date(mainStartDate);
+  helpStartDate.setHours(helpStartH, helpStartM, 0, 0);
+  const helpEndDate = new Date(helpStartDate.getTime() + helpDuration * 60000);
 
-    doneButton.addEventListener('click', () => {
-      successModal.style.display = 'none';
-      form.reset();
-      helpTimeContainer.classList.remove('show');
-      additionalContainer.classList.remove('show');
-      iti.setNumber('');
-    });
+  const formatTime = (date) => date.toTimeString().slice(0, 5);
+  const helpRange = `HELP ${formatTime(helpStartDate)}-${formatTime(helpEndDate)}`;
+  descriptionParts.push(helpRange);
+}
 
-    function applyTheme(isDark) {
-      if (isDark) {
-        document.body.classList.add('dark');
-      } else {
-        document.body.classList.remove('dark');
-      }
-    }
+if (additionalCheckbox.checked && additionalNotesInput.value.trim()) {
+  descriptionParts.push(additionalNotesInput.value.trim());
+}
 
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    applyTheme(mediaQuery.matches);
-    mediaQuery.addEventListener('change', e => {
-      applyTheme(e.matches);
-    });
+const payload = new URLSearchParams({
+  title: `${document.getElementById('service').value}: ${document.getElementById('clientName').value}`,
+  description: descriptionParts.join('\n'),
+  location: phoneFormatted,
+  startTime: startTime.toISOString(),
+  endTime: endTime.toISOString(),
+  calendar: "master1"
+});
+
+fetch("https://script.google.com/macros/s/AKfycbzxAViVVAnE2Wm_MaT5T8wheiLQpEgRLR8P5PGdSTU7NDKLKrkFLNsmpCJaaXTtLcHe/exec", {
+  method: "POST",
+  body: payload
+})
+.then(response => response.json())
+.then(data => {
+  overlaySpinner.classList.remove('show');
+  submitButton.disabled = false;
+  if (data.status === "ok") {
+    successModal.style.display = 'flex';
+  } else {
+    alert("Ошибка: " + data.message);
+  }
+})
+.catch(err => {
+  overlaySpinner.classList.remove('show');
+  submitButton.disabled = false;
+  alert("Ошибка отправки: " + err.message);
+});
+});
+
+doneButton.addEventListener('click', () => {
+  successModal.style.display = 'none';
+  form.reset();
+  iti.setNumber('');
+  helpTimeContainer.classList.remove('show');
+  additionalContainer.classList.remove('show');
+});
   </script>
 </body>
 </html>
