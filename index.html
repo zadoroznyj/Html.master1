@@ -12,8 +12,71 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Запись" />
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.min.css" />
+
   <style>
+    :root {
+      --primary-color: #8a2be2;
+      --checkbox-size: 20px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: linear-gradient(to right top, #1a1a1a, #222831, #1f1f1f);
+        color: #ddd;
+      }
+      .form-container {
+        background: #1e1e1e;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      }
+      label, h2 {
+        color: #ddd;
+      }
+      input, select, textarea {
+        background: #2a2a2a;
+        border: 1.5px solid #444;
+        color: #eee;
+      }
+      .checkbox-label input[type="checkbox"] {
+        appearance: none;
+        width: var(--checkbox-size);
+        height: var(--checkbox-size);
+        border: 2px solid #2a2a2a;
+        border-radius: 4px;
+        background-color: #2a2a2a;
+        display: inline-block;
+        position: relative;
+        transition: background-color 0.3s, border-color 0.3s;
+      }
+      .checkbox-label input[type="checkbox"]:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+      }
+      .checkbox-label input[type="checkbox"]:checked::after {
+        content: '';
+        position: absolute;
+        left: 4px;
+        top: 1px;
+        width: 6px;
+        height: 12px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+      button {
+        background: linear-gradient(135deg, var(--primary-color), #da70d6);
+        color: white;
+      }
+      #successModal .modal-content {
+        background: #2a2a2a;
+        color: #fff;
+      }
+      #successModal .modal-content button {
+        background: linear-gradient(135deg, var(--primary-color), #da70d6);
+        color: white;
+      }
+    }
+
     body {
       margin: 0;
       padding: 40px 20px;
@@ -23,8 +86,6 @@
       justify-content: center;
       align-items: flex-start;
       min-height: 100vh;
-      color: #333;
-      transition: background 0.3s, color 0.3s;
     }
     .form-container {
       background: rgba(255, 255, 255, 0.95);
@@ -34,7 +95,6 @@
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
       max-width: 480px;
       width: 100%;
-      transition: background 0.3s, box-shadow 0.3s;
     }
     h2 {
       text-align: center;
@@ -57,10 +117,9 @@
       border-radius: 10px;
       border: 1.5px solid #ccc;
       font-size: 18px;
-      transition: border-color 0.3s, background 0.3s, color 0.3s;
+      transition: border-color 0.3s;
       background: #fff;
       font-family: inherit;
-      color: #333;
     }
     input[type="datetime-local"] {
       appearance: none;
@@ -78,11 +137,10 @@
       font-family: inherit;
       box-sizing: border-box;
       background: #fff;
-      color: #333;
     }
     button {
       margin-bottom: 0;
-      background: linear-gradient(135deg, #8a2be2, #da70d6);
+      background: linear-gradient(135deg, var(--primary-color), #da70d6);
       color: white;
       font-weight: bold;
       border: none;
@@ -106,6 +164,7 @@
       transform: none;
       box-shadow: none;
     }
+
     .checkbox-label {
       display: flex;
       align-items: center;
@@ -113,49 +172,20 @@
       font-weight: 600;
       color: #444;
       font-size: 18px;
-      cursor: pointer;
-      user-select: none;
     }
-    .checkbox-label input[type="checkbox"] {
-      margin-right: 10px;
-      cursor: pointer;
-      position: relative;
-      width: 20px;
-      height: 20px;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      border: 2px solid #ccc;
-      border-radius: 4px;
-      background: #fff;
-      transition: border-color 0.3s, background 0.3s;
-    }
-    .checkbox-label input[type="checkbox"]:checked {
-      background: #8a2be2;
-      border-color: #8a2be2;
-    }
-    .checkbox-label input[type="checkbox"]:checked::after {
-      content: "";
-      position: absolute;
-      left: 5px;
-      top: 1px;
-      width: 5px;
-      height: 10px;
-      border: solid white;
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg);
-    }
-    #helpTimeContainer, #additionalContainer {
+    #helpTimeContainer,
+    #additionalContainer {
       display: none;
       margin-bottom: 20px;
       opacity: 0;
-      transition: opacity 0.3s;
+      transition: opacity 0.3s ease;
     }
-    #helpTimeContainer.show, #additionalContainer.show {
+    #helpTimeContainer.show,
+    #additionalContainer.show {
       display: block;
       opacity: 1;
     }
-    #successModal {
+        #successModal {
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -163,9 +193,6 @@
       z-index: 1000;
       align-items: center;
       justify-content: center;
-    }
-    #successModal.show {
-      display: flex;
     }
     #successModal .modal-content {
       background: white;
@@ -179,24 +206,15 @@
     }
     #successModal .modal-content h3 {
       color: #4B0082;
-      margin: 0 0 16px;
+      margin-top: 0;
       font-size: 23px;
     }
     #successModal .modal-content p {
-      margin: 0 0 24px;
+      margin: 16px 0 24px;
       font-size: 18px;
       color: #444;
     }
-    #successModal .modal-content button {
-      background: linear-gradient(135deg, #8a2be2, #da70d6);
-      color: white;
-      font-weight: bold;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 12px;
-      font-size: 19px;
-      cursor: pointer;
-    }
+
     #overlaySpinner {
       display: none;
       position: fixed;
@@ -206,14 +224,9 @@
       backdrop-filter: blur(2px);
       justify-content: center;
       align-items: center;
-      opacity: 0;
-      transition: opacity 0.3s;
-      pointer-events: none;
     }
     #overlaySpinner.show {
       display: flex;
-      opacity: 1;
-      pointer-events: auto;
     }
     #overlaySpinner .spinner {
       width: 50px;
@@ -222,59 +235,10 @@
       border-top-color: white;
       border-radius: 50%;
       animation: spin 1s linear infinite;
+      margin: auto;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Тёмная тема */
-    @media (prefers-color-scheme: dark) {
-      body {
-        background: linear-gradient(to right top, #1f052a, #3b1f66, #4f2c95);
-        color: #d8cbf9;
-      }
-      .form-container {
-        background: rgba(30, 16, 60, 0.85);
-        box-shadow: 0 12px 40px rgba(80, 35, 140, 0.7);
-      }
-      h2 {
-        color: #d8cbf9;
-      }
-      label {
-        color: #d8cbf9;
-      }
-      input, select, textarea {
-        background: #2e1c54;
-        border: 1.5px solid #6b4bbb;
-        color: #d8cbf9;
-      }
-      .iti input {
-        background: #2e1c54 !important;
-        border: 1.5px solid #6b4bbb !important;
-        color: #d8cbf9 !important;
-      }
-      button {
-        background: linear-gradient(135deg, #8a2be2, #da70d6);
-        box-shadow: 0 6px 16px rgba(138, 43, 226, 0.9);
-      }
-      button:hover:not(:disabled) {
-        box-shadow: 0 8px 22px rgba(138, 43, 226, 1);
-      }
-      .checkbox-label input[type="checkbox"] {
-        background: #2e1c54;
-        border: 2px solid #6b4bbb;
-      }
-      .checkbox-label input[type="checkbox"]:checked {
-        background: #8a2be2;
-        border-color: #8a2be2;
-      }
-      .checkbox-label input[type="checkbox"]:checked::after {
-        content: "";
-        position: absolute;
-        left: 5px; top: 1px;
-        width: 5px; height: 10px;
-        border: solid white;
-        border-width: 0 2px 2px 0;
-        transform: rotate(45deg);
-      }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -303,15 +267,24 @@
     <label for="clientPhone">Телефон:</label>
     <input type="tel" id="clientPhone" required placeholder="Введите номер телефона">
 
-    <label class="checkbox-label"><input type="checkbox" id="helpCheckbox"> Нужна помощь второго мастера</label>
+    <label class="checkbox-label">
+      <input type="checkbox" id="helpCheckbox" />
+      Нужна помощь второго мастера
+    </label>
+
     <div id="helpTimeContainer">
       <label for="helpStartTime">Время начала помощи:</label>
       <select id="helpStartTime"></select>
+
       <label for="helpDuration">Длительность помощи (минут):</label>
-      <input type="number" id="helpDuration" min="1" max="60" step="1" value="30">
+      <input type="number" id="helpDuration" min="1" max="60" step="1" value="30" />
     </div>
 
-    <label class="checkbox-label"><input type="checkbox" id="additionalCheckbox"> Дополнительно</label>
+    <label class="checkbox-label">
+      <input type="checkbox" id="additionalCheckbox" />
+      Дополнительно
+    </label>
+
     <div id="additionalContainer">
       <label for="additionalNotes">Дополнительная заметка:</label>
       <textarea id="additionalNotes" rows="3" placeholder="Введите заметку..."></textarea>
@@ -328,29 +301,32 @@
     </div>
   </div>
 
-  <div id="overlaySpinner"><div class="spinner"></div></div>
+  <div id="overlaySpinner">
+    <div class="spinner"></div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"></script>
   <script>
     const form = document.getElementById('appointmentForm');
-    const startDateTimeInput = document.getElementById('startDateTime');
-    const durationInput = document.getElementById('duration');
     const helpCheckbox = document.getElementById('helpCheckbox');
-    const additionalCheckbox = document.getElementById('additionalCheckbox');
     const helpTimeContainer = document.getElementById('helpTimeContainer');
+    const additionalCheckbox = document.getElementById('additionalCheckbox');
     const additionalContainer = document.getElementById('additionalContainer');
-    const helpStartTime = document.getElementById('helpStartTime');
-    const helpDurationInput = document.getElementById('helpDuration');
-    const phoneInput = document.getElementById('clientPhone');
     const submitButton = document.getElementById('submitButton');
+    const overlaySpinner = document.getElementById('overlaySpinner');
     const successModal = document.getElementById('successModal');
     const doneButton = document.getElementById('doneButton');
-    const overlaySpinner = document.getElementById('overlaySpinner');
+    const phoneInput = document.getElementById('clientPhone');
+    const startDateTimeInput = document.getElementById('startDateTime');
+    const durationInput = document.getElementById('duration');
+    const helpStartTimeSelect = document.getElementById('helpStartTime');
+    const helpDurationInput = document.getElementById('helpDuration');
+    const additionalNotesInput = document.getElementById('additionalNotes');
 
     const iti = window.intlTelInput(phoneInput, {
-      initialCountry: "ca",
-      preferredCountries: ["ca", "lt", "us"],
+      initialCountry: "auto",
+      preferredCountries: ["ca", "lt", "ua"],
       nationalMode: false,
       utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
     });
@@ -359,68 +335,79 @@
       helpTimeContainer.classList.toggle('show', helpCheckbox.checked);
       if (helpCheckbox.checked) updateHelpTimes();
     });
+
     additionalCheckbox.addEventListener('change', () => {
       additionalContainer.classList.toggle('show', additionalCheckbox.checked);
     });
 
     function updateHelpTimes() {
-      helpStartTime.innerHTML = '';
-      const st = new Date(startDateTimeInput.value);
-      const dur = parseInt(durationInput.value);
-      if (isNaN(st) || isNaN(dur)) return;
-      const end = new Date(st.getTime() + dur * 60000);
-      for (let t = new Date(st); t < end; t.setMinutes(t.getMinutes() + 15)) {
-        const op = document.createElement('option');
-        op.value = t.toISOString();
-        op.textContent = t.toTimeString().slice(0, 5);
-        helpStartTime.appendChild(op);
+      helpStartTimeSelect.innerHTML = '';
+      const start = new Date(startDateTimeInput.value);
+      const duration = parseInt(durationInput.value, 10);
+      if (!start || isNaN(duration)) return;
+
+      const end = new Date(start.getTime() + duration * 60000);
+      for (let t = new Date(start); t < end; t.setMinutes(t.getMinutes() + 15)) {
+        const option = document.createElement('option');
+        option.value = t.toISOString();
+        option.textContent = t.toTimeString().slice(0, 5);
+        helpStartTimeSelect.appendChild(option);
       }
     }
 
-    helpStartTime.addEventListener('change', adjustHelpMax);
-    durationInput.addEventListener('change', () => helpCheckbox.checked && updateHelpTimes());
-    startDateTimeInput.addEventListener('change', () => helpCheckbox.checked && updateHelpTimes());
-
-    function adjustHelpMax() {
+    helpStartTimeSelect.addEventListener('change', () => {
       const mainStart = new Date(startDateTimeInput.value);
       const mainEnd = new Date(mainStart.getTime() + parseInt(durationInput.value) * 60000);
-      const helpStart = new Date(helpStartTime.value);
+      const helpStart = new Date(helpStartTimeSelect.value);
       const max = Math.floor((mainEnd - helpStart) / 60000);
       helpDurationInput.max = max > 0 ? max : 1;
-      if (parseInt(helpDurationInput.value) > helpDurationInput.max) {
+      if (helpDurationInput.value > helpDurationInput.max) {
         helpDurationInput.value = helpDurationInput.max;
       }
-    }
+    });
 
-    form.addEventListener('submit', e => {
+    durationInput.addEventListener('change', () => {
+      if (helpCheckbox.checked) updateHelpTimes();
+    });
+
+    startDateTimeInput.addEventListener('change', () => {
+      if (helpCheckbox.checked) updateHelpTimes();
+    });
+
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
       if (!iti.isValidNumber()) {
         alert("Введите корректный номер телефона.");
         return;
       }
+
       overlaySpinner.classList.add('show');
       submitButton.disabled = true;
 
       const phoneFormatted = iti.getNumber();
-      const st = new Date(startDateTimeInput.value);
-      const en = new Date(st.getTime() + parseInt(durationInput.value) * 60000);
-      let descriptionParts = [];
+      const startTime = new Date(startDateTimeInput.value);
+      const endTime = new Date(startTime.getTime() + parseInt(durationInput.value) * 60000);
+      const helpNeeded = helpCheckbox.checked;
+      const helpStart = helpStartTimeSelect.value;
+      const helpDuration = parseInt(helpDurationInput.value);
 
-      if (helpCheckbox.checked) {
-        const hs = new Date(helpStartTime.value);
-        const hend = new Date(hs.getTime() + parseInt(helpDurationInput.value) * 60000);
-        descriptionParts.push(`HELP ${hs.toTimeString().slice(0,5)}-${hend.toTimeString().slice(0,5)}`);
+      let descriptionParts = [];
+      if (helpNeeded) {
+        const helpStartTime = new Date(helpStart);
+        const helpEndTime = new Date(helpStartTime.getTime() + helpDuration * 60000);
+        const helpRange = `HELP ${helpStartTime.toTimeString().slice(0, 5)}-${helpEndTime.toTimeString().slice(0, 5)}`;
+        descriptionParts.push(helpRange);
       }
-      if (additionalCheckbox.checked && document.getElementById('additionalNotes').value.trim()) {
-        descriptionParts.push(document.getElementById('additionalNotes').value.trim());
+      if (additionalCheckbox.checked && additionalNotesInput.value.trim()) {
+        descriptionParts.push(additionalNotesInput.value.trim());
       }
 
       const payload = new URLSearchParams({
         title: `${document.getElementById('service').value}: ${document.getElementById('clientName').value}`,
         description: descriptionParts.join('\n'),
         location: phoneFormatted,
-        startTime: st.toISOString(),
-        endTime: en.toISOString(),
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString(),
         calendar: "master1"
       });
 
@@ -428,13 +415,15 @@
         method: "POST",
         body: payload
       })
-      .then(r => r.json())
+      .then(response => response.json())
       .then(data => {
         overlaySpinner.classList.remove('show');
         submitButton.disabled = false;
         if (data.status === "ok") {
-          successModal.classList.add('show');
-        } else alert("Ошибка: " + data.message);
+          successModal.style.display = 'flex';
+        } else {
+          alert("Ошибка: " + data.message);
+        }
       })
       .catch(err => {
         overlaySpinner.classList.remove('show');
@@ -444,7 +433,7 @@
     });
 
     doneButton.addEventListener('click', () => {
-      successModal.classList.remove('show');
+      successModal.style.display = 'none';
       form.reset();
       iti.setNumber('');
       helpTimeContainer.classList.remove('show');
