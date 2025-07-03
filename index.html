@@ -114,7 +114,7 @@
       font-size: 18px;
     }
 
-    /* Чекбоксы дневной темы — кастомный стиль с пурпурной галочкой */
+    /* --- Кастомные чекбоксы дневной темы --- */
     .checkbox-label input[type="checkbox"] {
       width: 20px;
       height: 20px;
@@ -144,6 +144,7 @@
       border-width: 0 2.5px 2.5px 0;
       transform: rotate(45deg);
       pointer-events: none;
+      /* точная галочка, ровная */
     }
     .checkbox-label input[type="checkbox"]:focus {
       outline: 2px solid #8a2be2;
@@ -280,7 +281,7 @@
     /* Чекбоксы в темной теме */
     body.dark .checkbox-label input[type="checkbox"] {
       background-color: #22232b;
-      border: 1.5px solid #555;
+      border: 1.5px solid #22232b; /* совпадает с фоном, чтобы не выделялся */
       border-radius: 6px;
       width: 20px;
       height: 20px;
@@ -442,95 +443,95 @@
   });
 
   additionalCheckbox.addEventListener('change', () => {
-  if (additionalCheckbox.checked) {
-    additionalContainer.classList.add('show');
-  } else {
+    if (additionalCheckbox.checked) {
+      additionalContainer.classList.add('show');
+    } else {
+      additionalContainer.classList.remove('show');
+    }
+  });
+
+  function updateHelpTimes() {
+    helpStartTimeSelect.innerHTML = '';
+    const startDate = new Date(startDateTimeInput.value);
+    if (isNaN(startDate)) return;
+
+    const mainDuration = parseInt(durationInput.value) || 0;
+    for (let i = 0; i <= mainDuration; i += 5) {
+      const time = new Date(startDate.getTime() + i * 60000);
+      const hh = time.getHours().toString().padStart(2, '0');
+      const mm = time.getMinutes().toString().padStart(2, '0');
+      const option = document.createElement('option');
+      option.value = `${hh}:${mm}`;
+      option.textContent = `${hh}:${mm}`;
+      helpStartTimeSelect.appendChild(option);
+    }
+  }
+
+  startDateTimeInput.addEventListener('change', () => {
+    if (helpCheckbox.checked) {
+      updateHelpTimes();
+    }
+  });
+
+  // Простая валидация и отправка формы
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    if (!iti.isValidNumber()) {
+      alert('Введите корректный номер телефона');
+      phoneInput.focus();
+      return;
+    }
+
+    submitButton.disabled = true;
+    overlaySpinner.classList.add('show');
+
+    // Собираем данные
+    const data = {
+      startDateTime: startDateTimeInput.value,
+      service: document.getElementById('service').value,
+      duration: durationInput.value,
+      clientName: document.getElementById('clientName').value.trim(),
+      clientPhone: iti.getNumber(),
+      helpNeeded: helpCheckbox.checked,
+      helpStartTime: helpCheckbox.checked ? helpStartTimeSelect.value : null,
+      helpDuration: helpCheckbox.checked ? helpDurationInput.value : null,
+      additionalNeeded: additionalCheckbox.checked,
+      additionalNotes: additionalCheckbox.checked ? additionalNotesInput.value.trim() : null,
+    };
+
+    // Здесь можно отправить данные на сервер (fetch / AJAX)
+
+    // Для демонстрации - имитируем задержку
+    setTimeout(() => {
+      overlaySpinner.classList.remove('show');
+      submitButton.disabled = false;
+      successModal.style.display = 'flex';
+    }, 1000);
+  });
+
+  doneButton.addEventListener('click', () => {
+    successModal.style.display = 'none';
+    form.reset();
+    helpTimeContainer.classList.remove('show');
     additionalContainer.classList.remove('show');
-  }
-});
+    iti.setNumber('');
+  });
 
-function updateHelpTimes() {
-  helpStartTimeSelect.innerHTML = '';
-  const startDate = new Date(startDateTimeInput.value);
-  if (isNaN(startDate)) return;
-
-  const mainDuration = parseInt(durationInput.value) || 0;
-  for (let i = 0; i <= mainDuration; i += 5) {
-    const time = new Date(startDate.getTime() + i * 60000);
-    const hh = time.getHours().toString().padStart(2, '0');
-    const mm = time.getMinutes().toString().padStart(2, '0');
-    const option = document.createElement('option');
-    option.value = `${hh}:${mm}`;
-    option.textContent = `${hh}:${mm}`;
-    helpStartTimeSelect.appendChild(option);
-  }
-}
-
-startDateTimeInput.addEventListener('change', () => {
-  if (helpCheckbox.checked) {
-    updateHelpTimes();
-  }
-});
-
-// Простая валидация и отправка формы
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  if (!iti.isValidNumber()) {
-    alert('Введите корректный номер телефона');
-    phoneInput.focus();
-    return;
+  // Автоматическое переключение темы по системным настройкам
+  function applyTheme(isDark) {
+    if (isDark) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
   }
 
-  submitButton.disabled = true;
-  overlaySpinner.classList.add('show');
-
-  // Собираем данные
-  const data = {
-    startDateTime: startDateTimeInput.value,
-    service: document.getElementById('service').value,
-    duration: durationInput.value,
-    clientName: document.getElementById('clientName').value.trim(),
-    clientPhone: iti.getNumber(),
-    helpNeeded: helpCheckbox.checked,
-    helpStartTime: helpCheckbox.checked ? helpStartTimeSelect.value : null,
-    helpDuration: helpCheckbox.checked ? helpDurationInput.value : null,
-    additionalNeeded: additionalCheckbox.checked,
-    additionalNotes: additionalCheckbox.checked ? additionalNotesInput.value.trim() : null,
-  };
-
-  // Здесь можно отправить данные на сервер (fetch / AJAX)
-
-  // Для демонстрации - имитируем задержку
-  setTimeout(() => {
-    overlaySpinner.classList.remove('show');
-    submitButton.disabled = false;
-    successModal.style.display = 'flex';
-  }, 1000);
-});
-
-doneButton.addEventListener('click', () => {
-  successModal.style.display = 'none';
-  form.reset();
-  helpTimeContainer.classList.remove('show');
-  additionalContainer.classList.remove('show');
-  iti.setNumber('');
-});
-
-// Автоматическое переключение темы по системным настройкам
-function applyTheme(isDark) {
-  if (isDark) {
-    document.body.classList.add('dark');
-  } else {
-    document.body.classList.remove('dark');
-  }
-}
-
-const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-applyTheme(mediaQuery.matches);
-mediaQuery.addEventListener('change', e => {
-  applyTheme(e.matches);
-});
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  applyTheme(mediaQuery.matches);
+  mediaQuery.addEventListener('change', e => {
+    applyTheme(e.matches);
+  });
 </script>
 
 </body>
