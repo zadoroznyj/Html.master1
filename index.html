@@ -255,7 +255,7 @@
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"></script>
 <script>
-    const form = document.getElementById('appointmentForm');
+  const form = document.getElementById('appointmentForm');
   const startDateTimeInput = document.getElementById('startDateTime');
   const durationInput = document.getElementById('duration');
   const helpCheckbox = document.getElementById('helpCheckbox');
@@ -271,19 +271,9 @@
   const doneButton = document.getElementById('doneButton');
   const overlaySpinner = document.getElementById('overlaySpinner');
 
-  // Инициализация intl-tel-input с автоопределением страны по IP
+  // intl-tel-input инициализация
   const iti = window.intlTelInput(phoneInput, {
-    initialCountry: "auto",
-    geoIpLookup: function(callback) {
-      fetch('https://ipinfo.io/json?token=2b69f5f4b3a3ee')
-        .then(resp => resp.json())
-        .then(data => {
-          callback(data && data.country ? data.country : 'us');
-        })
-        .catch(() => {
-          callback('us');
-        });
-    },
+    initialCountry: "ca",
     preferredCountries: ["ca", "lt", "us"],
     nationalMode: false,
     utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
