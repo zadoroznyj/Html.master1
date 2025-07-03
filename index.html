@@ -563,6 +563,19 @@ doneButton.addEventListener('click', () => {
   helpTimeContainer.classList.remove('show');
   additionalContainer.classList.remove('show');
 });
+    function applyTheme(isDark) {
+  if (isDark) {
+    document.body.classList.add('dark');
+  } else {
+    document.body.classList.remove('dark');
+  }
+}
+
+const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+applyTheme(mediaQuery.matches);
+mediaQuery.addEventListener('change', e => {
+  applyTheme(e.matches);
+});
   </script>
 </body>
 </html>
