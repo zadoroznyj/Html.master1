@@ -14,6 +14,7 @@
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.css" />
   <style>
+    /* Общие стили и светлая тема */
     body {
       margin: 0;
       padding: 40px 20px;
@@ -24,6 +25,7 @@
       align-items: flex-start;
       min-height: 100vh;
       color: #333;
+      transition: background 0.3s, color 0.3s;
     }
     .form-container {
       background: rgba(255, 255, 255, 0.95);
@@ -33,13 +35,14 @@
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
       max-width: 480px;
       width: 100%;
-      color: #333;
+      transition: background 0.3s, box-shadow 0.3s;
     }
     h2 {
       text-align: center;
       margin-bottom: 28px;
       color: #333;
       font-size: 27px;
+      transition: color 0.3s;
     }
     label {
       display: block;
@@ -47,6 +50,7 @@
       font-weight: 600;
       color: #555;
       font-size: 18px;
+      transition: color 0.3s;
     }
     input, select, textarea {
       width: 100%;
@@ -56,10 +60,10 @@
       border-radius: 10px;
       border: 1.5px solid #ccc;
       font-size: 18px;
-      transition: border-color 0.3s;
+      transition: border-color 0.3s, background 0.3s, color 0.3s;
       background: #fff;
       font-family: inherit;
-      color: #333;
+      color: #000;
     }
     input[type="datetime-local"] {
       appearance: none;
@@ -77,7 +81,7 @@
       font-family: inherit;
       box-sizing: border-box;
       background: #fff;
-      color: #333;
+      color: #000;
     }
     button {
       margin-bottom: 0;
@@ -112,6 +116,7 @@
       font-weight: 600;
       color: #444;
       font-size: 18px;
+      user-select: none;
     }
     .checkbox-label input[type="checkbox"] {
       width: 20px;
@@ -120,25 +125,11 @@
       accent-color: #8a2be2;
       cursor: pointer;
     }
-    /* Плавное появление/скрытие блоков */
     #helpTimeContainer, #additionalContainer {
-      max-height: 0;
-      opacity: 0;
-      overflow: hidden;
-      transition: max-height 0.35s ease, opacity 0.35s ease;
-      margin-bottom: 0;
-      background: #f9f9f9;
-      border-radius: 10px;
-      padding: 0 0;
-    }
-    #helpTimeContainer.show, #additionalContainer.show {
-      max-height: 500px;
-      opacity: 1;
+      display: none;
       margin-bottom: 20px;
-      padding: 15px 14px;
-      background: #f1ecff;
+      transition: opacity 0.3s ease;
     }
-    /* Модальное окно */
     #successModal {
       display: none;
       position: fixed;
@@ -150,6 +141,7 @@
     }
     #successModal.show {
       display: flex;
+      animation: fadeIn 0.3s ease forwards;
     }
     #successModal .modal-content {
       background: white;
@@ -160,7 +152,6 @@
       text-align: center;
       font-family: 'Segoe UI', sans-serif;
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-      color: #333;
     }
     #successModal .modal-content h3 {
       color: #4B0082;
@@ -193,9 +184,14 @@
       backdrop-filter: blur(2px);
       justify-content: center;
       align-items: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
     }
     #overlaySpinner.show {
       display: flex;
+      opacity: 1;
+      pointer-events: auto;
     }
     #overlaySpinner .spinner {
       width: 50px;
@@ -209,69 +205,79 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
 
     /* Тёмная тема */
     @media (prefers-color-scheme: dark) {
       body {
-        background: linear-gradient(to right top, #121214, #1e1e22, #2a2a2e);
-        color: #eee;
-      }
-      .form-container {
-        background: rgba(40, 40, 45, 0.95);
-        box-shadow: 0 12px 40px rgba(80, 0, 130, 0.7);
-        color: #eee;
-      }
-      input, select, textarea, .iti, .iti input {
-        background: #2b2b30;
-        color: #eee;
-        border-color: #555;
-      }
-      label, .checkbox-label {
-        color: #ccc;
-      }
-      /* Чекбоксы цвета как фон, чтобы не выделялись */
-      .checkbox-label input[type="checkbox"] {
-        accent-color: #29292f; /* цвет близкий к фону формы */
-        background: #29292f;
-        border: 1.5px solid #444;
-      }
-      #helpTimeContainer, #additionalContainer {
-        background: #38383f;
+        background: linear-gradient(to right top, #2a2137, #2e2743, #2e2a54);
         color: #ddd;
       }
-      #helpTimeContainer.show, #additionalContainer.show {
-        background: #4a4573;
+      .form-container {
+        background: rgba(25, 20, 35, 0.85);
+        box-shadow: 0 12px 40px rgba(50, 20, 80, 0.8);
+      }
+      h2 {
+        color: #d9b3ff; /* Яркий пурпурный, чтобы было видно */
+      }
+      label {
+        color: #ccc;
+      }
+      input, select, textarea {
+        background: #3b2f52;
+        border: 1.5px solid #5a4780;
         color: #eee;
       }
-      #successModal, #overlaySpinner {
-        background: rgba(0, 0, 0, 0.7);
+      .iti input {
+        background: #3b2f52 !important;
+        border: 1.5px solid #5a4780 !important;
+        color: #eee !important;
       }
+      button {
+        background: linear-gradient(135deg, #8a2be2, #da70d6);
+        color: white;
+        box-shadow: 0 6px 16px rgba(138, 43, 226, 0.6);
+      }
+      button:hover:not(:disabled) {
+        box-shadow: 0 8px 22px rgba(138, 43, 226, 0.9);
+      }
+      .checkbox-label {
+        color: #ccc;
+      }
+      /* Чекбоксы - фон такой же, как у формы */
+      .checkbox-label input[type="checkbox"] {
+        background-color: #3b2f52;
+        border: 1.5px solid #5a4780;
+        accent-color: #8a2be2;
+        cursor: pointer;
+      }
+      /* При выборе чекбокса пурпурный */
+      .checkbox-label input[type="checkbox"]:checked {
+        accent-color: #8a2be2;
+      }
+      /* Модальное окно */
       #successModal .modal-content {
-        background: #1f1f24;
-        color: #eee;
+        background: #3b2f52;
+        color: #ddd;
+        box-shadow: 0 12px 30px rgba(50, 20, 80, 0.8);
       }
       #successModal .modal-content h3 {
-        color: #bb88ff;
+        color: #d9b3ff;
       }
       #successModal .modal-content p {
         color: #ccc;
       }
-      #successModal .modal-content button {
-        background: linear-gradient(135deg, #a063ff, #da70d6);
-        color: white;
-      }
-      button {
-        background: linear-gradient(135deg, #a063ff, #da70d6);
-        box-shadow: 0 6px 16px rgba(160, 99, 255, 0.6);
-        color: white;
-      }
-      button:hover:not(:disabled) {
-        box-shadow: 0 8px 22px rgba(160, 99, 255, 0.8);
-        transform: translateY(-2px);
+      /* Спиннер */
+      #overlaySpinner {
+        background: rgba(10, 5, 20, 0.7);
+        backdrop-filter: blur(4px);
       }
       #overlaySpinner .spinner {
-        border: 6px solid rgba(255, 255, 255, 0.3);
-        border-top-color: #b471e8;
+        border: 6px solid rgba(217, 179, 255, 0.6);
+        border-top-color: #d9b3ff;
       }
     }
   </style>
@@ -374,26 +380,13 @@
     if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
     if (phoneParam) phoneInput.value = decodeURIComponent(phoneParam);
 
-    function fadeIn(el) {
-      el.classList.add('show');
-    }
-
-    function fadeOut(el) {
-      el.classList.remove('show');
-    }
-
     helpCheckbox.addEventListener('change', () => {
-      if (helpCheckbox.checked) {
-        fadeIn(helpTimeContainer);
-        updateHelpTimes();
-      } else {
-        fadeOut(helpTimeContainer);
-      }
+      helpTimeContainer.style.display = helpCheckbox.checked ? 'block' : 'none';
+      if (helpCheckbox.checked) updateHelpTimes();
     });
 
     additionalCheckbox.addEventListener('change', () => {
-      if (additionalCheckbox.checked) fadeIn(additionalContainer);
-      else fadeOut(additionalContainer);
+      additionalContainer.style.display = additionalCheckbox.checked ? 'block' : 'none';
     });
 
     function updateHelpTimes() {
@@ -447,13 +440,13 @@
       const endTime = new Date(startTime.getTime() + parseInt(durationInput.value) * 60000);
       const helpNeeded = helpCheckbox.checked;
       const helpStart = helpStartTimeSelect.value;
-      const helpDuration = parseInt(helpDurationInput.value);
+            const helpDuration = parseInt(helpDurationInput.value);
 
       let descriptionParts = [];
 
       if (helpNeeded) {
         const helpStartTime = new Date(helpStart);
-                const helpEndTime = new Date(helpStartTime.getTime() + helpDuration * 60000);
+        const helpEndTime = new Date(helpStartTime.getTime() + helpDuration * 60000);
         const helpRange = `HELP ${helpStartTime.toTimeString().slice(0, 5)}-${helpEndTime.toTimeString().slice(0, 5)}`;
         descriptionParts.push(helpRange);
       }
@@ -496,8 +489,8 @@
       successModal.classList.remove('show');
       form.reset();
       iti.setNumber('');
-      fadeOut(helpTimeContainer);
-      fadeOut(additionalContainer);
+      helpTimeContainer.style.display = 'none';
+      additionalContainer.style.display = 'none';
     });
   </script>
 </body>
