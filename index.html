@@ -445,7 +445,7 @@
     const phoneParam = new URLSearchParams(window.location.search).get("phone");
 
     if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
-    if (phoneParam) phoneInput.value = decodeURIComponent(phoneParam);
+    if (phoneParam) iti.setNumber(decodeURIComponent(phoneParam));
 
     helpCheckbox.addEventListener('change', () => {
       if (helpCheckbox.checked) {
