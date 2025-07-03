@@ -14,6 +14,11 @@
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.css" />
   <style>
+    :root {
+      /* Добавлены переменные для размера флажков */
+      --flag-width: 24px;
+      --flag-height: 16px;
+    }
     body {
       margin: 0;
       padding: 40px 20px;
@@ -79,6 +84,12 @@
       background: #fff;
       color: #000;
     }
+    /* Устанавливаем размер флажков через переменные */
+    .iti__flag {
+      width: var(--flag-width) !important;
+      height: var(--flag-height) !important;
+      background-size: contain !important;
+    }
     button {
       margin-bottom: 0;
       background: linear-gradient(135deg, #8a2be2, #da70d6);
@@ -137,9 +148,9 @@
     .checkbox-label input[type="checkbox"]:checked::after {
       content: "";
       position: absolute;
-      top: 3px;       /* чуть ниже */
-      left: 9px;      /* чуть левее */
-      width: 6px;     /* размер галочки меньше */
+      top: 3px;
+      left: 9px;
+      width: 6px;
       height: 11px;
       border: solid white;
       border-width: 0 3px 3px 0;
@@ -205,7 +216,7 @@
 
     /* Центрированный полноэкранный спиннер */
     #overlaySpinner {
-      display: none; /* изначально скрыт */
+      display: none;
       position: fixed;
       z-index: 1100;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -300,9 +311,9 @@
     body.dark .checkbox-label input[type="checkbox"]:checked::after {
       content: "";
       position: absolute;
-      top: 3px;       /* чуть ниже */
-      left: 9px;      /* чуть левее */
-      width: 6px;     /* размер галочки меньше */
+      top: 3px;
+      left: 9px;
+      width: 6px;
       height: 11px;
       border: solid white;
       border-width: 0 3px 3px 0;
@@ -442,118 +453,135 @@
 
   // intl-tel-input инициализация
   const iti = window.intlTelInput(phoneInput, {
-    initialCountry: "ca",
-    preferredCountries: ["ca", "lt", "us"],
-          nationalMode: false,
-      utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
-    });
+  initialCountry: "ru",
+  separateDialCode: true,
+  utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
+  nationalMode: false,
+});
 
-    const nameParam = new URLSearchParams(window.location.search).get("name");
-    const phoneParam = new URLSearchParams(window.location.search).get("phone");
+function populateHelpStartTimes() {
+  helpStartTimeSelect.innerHTML = '';
+  const startDateTime = new Date(startDateTimeInput.value);
+  if (isNaN(startDateTime.getTime())) return;
 
-    if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
-    if (phoneParam) phoneInput.value = decodeURIComponent(phoneParam);
+  // Интервал в 15 минут
+  const interval = 15;
+  const totalSlots = 24 * 4; // 24 часа * 4 интервала по 15 минут = 96
+  for (let i = 0; i < totalSlots; i++) {
+    const optionTime = new Date(startDateTime.getTime() + i * interval * 60000);
+    const h = optionTime.getHours().toString().padStart(2, '0');
+    const m = optionTime.getMinutes().toString().padStart(2, '0');
+    const option = document.createElement('option');
+    option.value = optionTime.toISOString();
+    option.textContent = `${h}:${m}`;
+    helpStartTimeSelect.appendChild(option);
+  }
+}
 
-    helpCheckbox.addEventListener('change', () => {
-      if (helpCheckbox.checked) {
-        helpTimeContainer.classList.add('show');
-        updateHelpTimes();
-      } else {
-        helpTimeContainer.classList.remove('show');
-      }
-    });
+helpCheckbox.addEventListener('change', () => {
+  if (helpCheckbox.checked) {
+    helpTimeContainer.classList.add('show');
+    populateHelpStartTimes();
+  } else {
+    helpTimeContainer.classList.remove('show');
+  }
+});
 
-    additionalCheckbox.addEventListener('change', () => {
-      if (additionalCheckbox.checked) {
-        additionalContainer.classList.add('show');
-      } else {
-        additionalContainer.classList.remove('show');
-      }
-    });
+additionalCheckbox.addEventListener('change', () => {
+  if (additionalCheckbox.checked) {
+    additionalContainer.classList.add('show');
+  } else {
+    additionalContainer.classList.remove('show');
+  }
+});
 
-    function updateHelpTimes() {
-      helpStartTimeSelect.innerHTML = '';
-      const startDate = new Date(startDateTimeInput.value);
-      if (isNaN(startDate)) return;
+// Валидация формы (основная)
+function validateForm() {
+  if (!startDateTimeInput.value) return false;
+  if (!durationInput.value || durationInput.value <= 0) return false;
+  if (!form.clientName.value.trim()) return false;
+  if (!iti.isValidNumber()) return false;
+  if (helpCheckbox.checked) {
+    if (!helpStartTimeSelect.value) return false;
+    if (!helpDurationInput.value || helpDurationInput.value <= 0) return false;
+  }
+  return true;
+}
 
-      const mainDuration = parseInt(durationInput.value) || 0;
-      for (let i = 0; i <= mainDuration; i += 5) {
-        const time = new Date(startDate.getTime() + i * 60000);
-        const hh = time.getHours().toString().padStart(2, '0');
-        const mm = time.getMinutes().toString().padStart(2, '0');
-        const option = document.createElement('option');
-        option.value = `${hh}:${mm}`;
-        option.textContent = `${hh}:${mm}`;
-        helpStartTimeSelect.appendChild(option);
-      }
-    }
+function toggleSubmitButton() {
+  submitButton.disabled = !validateForm();
+}
 
-    startDateTimeInput.addEventListener('change', () => {
-      if (helpCheckbox.checked) {
-        updateHelpTimes();
-      }
-    });
+form.addEventListener('input', toggleSubmitButton);
+helpCheckbox.addEventListener('input', toggleSubmitButton);
+additionalCheckbox.addEventListener('input', toggleSubmitButton);
+helpStartTimeSelect.addEventListener('input', toggleSubmitButton);
+helpDurationInput.addEventListener('input', toggleSubmitButton);
+phoneInput.addEventListener('input', toggleSubmitButton);
 
-    // Простая валидация и отправка формы
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-      if (!iti.isValidNumber()) {
-        alert('Введите корректный номер телефона');
-        phoneInput.focus();
-        return;
-      }
+  if (!validateForm()) {
+    alert('Пожалуйста, заполните все обязательные поля корректно.');
+    return;
+  }
 
-      submitButton.disabled = true;
-      overlaySpinner.classList.add('show');
+  submitButton.disabled = true;
+  overlaySpinner.classList.add('show');
 
-      // Собираем данные
-      const data = {
-        startDateTime: startDateTimeInput.value,
-        service: document.getElementById('service').value,
-        duration: durationInput.value,
-        clientName: document.getElementById('clientName').value.trim(),
-        clientPhone: iti.getNumber(),
-        helpNeeded: helpCheckbox.checked,
-        helpStartTime: helpCheckbox.checked ? helpStartTimeSelect.value : null,
-        helpDuration: helpCheckbox.checked ? helpDurationInput.value : null,
-        additionalNeeded: additionalCheckbox.checked,
-        additionalNotes: additionalCheckbox.checked ? additionalNotesInput.value.trim() : null,
-      };
+  try {
+    // Формируем данные для отправки или обработки
+    const data = {
+      startDateTime: startDateTimeInput.value,
+      service: form.service.value,
+      duration: Number(durationInput.value),
+      clientName: form.clientName.value.trim(),
+      clientPhone: iti.getNumber(),
+      needHelp: helpCheckbox.checked,
+      helpStartTime: helpCheckbox.checked ? helpStartTimeSelect.value : null,
+      helpDuration: helpCheckbox.checked ? Number(helpDurationInput.value) : null,
+      additionalNotes: additionalCheckbox.checked ? additionalNotesInput.value.trim() : '',
+    };
 
-      // Здесь можно отправить данные на сервер (fetch / AJAX)
+    // Здесь мог бы быть AJAX-запрос или обработка данных, например:
+    // await fetch('/api/appointments', { method: 'POST', body: JSON.stringify(data), headers: {'Content-Type':'application/json'} });
 
-      // Для демонстрации - имитируем задержку
-      setTimeout(() => {
-        overlaySpinner.classList.remove('show');
-        submitButton.disabled = false;
-        successModal.style.display = 'flex';
-      }, 1000);
-    });
+    // Имитируем задержку ответа сервера
+    await new Promise(res => setTimeout(res, 1500));
 
-    doneButton.addEventListener('click', () => {
-      successModal.style.display = 'none';
-      form.reset();
-      helpTimeContainer.classList.remove('show');
-      additionalContainer.classList.remove('show');
-      iti.setNumber('');
-    });
+    // Отображаем модальное окно успеха
+    successModal.style.display = 'flex';
 
-    // Автоматическое переключение темы по системным настройкам
-    function applyTheme(isDark) {
-      if (isDark) {
-        document.body.classList.add('dark');
-      } else {
-        document.body.classList.remove('dark');
-      }
-    }
+  } catch (error) {
+    alert('Ошибка при создании записи. Попробуйте ещё раз.');
+  } finally {
+    submitButton.disabled = false;
+    overlaySpinner.classList.remove('show');
+  }
+});
 
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    applyTheme(mediaQuery.matches);
-    mediaQuery.addEventListener('change', e => {
-      applyTheme(e.matches);
-    });
-  </script>
+doneButton.addEventListener('click', () => {
+  successModal.style.display = 'none';
+  form.reset();
+  helpTimeContainer.classList.remove('show');
+  additionalContainer.classList.remove('show');
+  toggleSubmitButton();
+  iti.setNumber('');
+});
 
+// Предустановка текущей даты и времени с шагом 15 минут
+function roundDateTo15Min(date) {
+  const ms = 1000 * 60 * 15;
+  return new Date(Math.ceil(date.getTime() / ms) * ms);
+}
+window.addEventListener('load', () => {
+  const now = roundDateTo15Min(new Date());
+  // Формат для datetime-local: yyyy-MM-ddTHH:mm
+  const localISO = now.toISOString().slice(0,16);
+  startDateTimeInput.value = localISO;
+  toggleSubmitButton();
+});
+</script>
 </body>
 </html>
