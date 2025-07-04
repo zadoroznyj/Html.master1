@@ -237,29 +237,6 @@
       opacity: 1;
     }
 
-    /* Новый стиль для блока длительности помощи - флекс */
-    #helpDurationContainer {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-    #helpDurationContainer select {
-      flex: 1;
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 16px;
-      border: 1.5px solid #ccc;
-      background: #fff;
-      color: #000;
-      font-family: 'Segoe UI', sans-serif;
-      transition: border-color 0.3s, background-color 0.3s, color 0.3s;
-    }
-    body.dark #helpDurationContainer select {
-      background: #22232b;
-      border: 1.5px solid #555;
-      color: #eee;
-    }
-
     #successModal {
       display: none;
       position: fixed;
@@ -369,7 +346,7 @@
 
     body.dark .iti__country:hover {
       background-color: #8a2be2 !important;
-      color: white !important;
+          color: white !important;
     }
   </style>
 </head>
@@ -390,28 +367,8 @@
         <option value="Другое">Другое</option>
       </select>
 
-      <label>Длительность процедуры:</label>
-      <div style="display: flex; gap: 10px; margin-bottom: 18px;">
-        <select id="durationHours" required style="flex: 1;">
-          <option value="" disabled selected>Часы</option>
-          <option value="0">0</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-        </select>
-        <select id="durationMinutes" required style="flex: 1;">
-          <option value="" disabled selected>Минуты</option>
-          <option value="0">0</option>
-          <option value="15">15</option>
-          <option value="30">30</option>
-          <option value="45">45</option>
-        </select>
-      </div>
+      <label for="duration">Длительность (минут):</label>
+      <input type="number" id="duration" min="1" max="480" value="60" required>
 
       <label for="clientName">Имя клиента:</label>
       <input type="text" id="clientName" required>
@@ -428,28 +385,8 @@
         <label for="helpStartTime">Время начала помощи:</label>
         <select id="helpStartTime"></select>
 
-        <label>Длительность помощи:</label>
-        <div id="helpDurationContainer">
-          <select id="helpDurationHours" required>
-            <option value="" disabled selected>Часы</option>
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-          </select>
-          <select id="helpDurationMinutes" required>
-            <option value="" disabled selected>Минуты</option>
-            <option value="0">0</option>
-            <option value="15">15</option>
-            <option value="30">30</option>
-            <option value="45">45</option>
-          </select>
-        </div>
+        <label for="helpDuration">Длительность помощи (минут):</label>
+        <input type="number" id="helpDuration" min="1" max="60" step="1" value="30" />
       </div>
 
       <label class="checkbox-label">
@@ -483,117 +420,140 @@
   <script>
     const form = document.getElementById('appointmentForm');
     const startDateTimeInput = document.getElementById('startDateTime');
-    const durationHoursSelect = document.getElementById('durationHours');
-    const durationMinutesSelect = document.getElementById('durationMinutes');
+    const durationInput = document.getElementById('duration');
     const helpCheckbox = document.getElementById('helpCheckbox');
-    const helpTimeSelectHours = document.getElementById('helpTimeHours');
-const helpTimeSelectMinutes = document.getElementById('helpTimeMinutes');
+    const helpTimeContainer = document.getElementById('helpTimeContainer');
+    const helpStartTimeSelect = document.getElementById('helpStartTime');
+    const helpDurationInput = document.getElementById('helpDuration');
+    const additionalCheckbox = document.getElementById('additionalCheckbox');
+    const additionalContainer = document.getElementById('additionalContainer');
+    const additionalNotesInput = document.getElementById('additionalNotes');
+    const phoneInput = document.getElementById('clientPhone');
+    const submitButton = document.getElementById('submitButton');
+    const successModal = document.getElementById('successModal');
+    const doneButton = document.getElementById('doneButton');
+    const overlaySpinner = document.getElementById('overlaySpinner');
 
-function populateHelpTimeSelectors() {
-  helpTimeSelectHours.innerHTML = '';
-  helpTimeSelectMinutes.innerHTML = '';
+    const iti = window.intlTelInput(phoneInput, {
+      initialCountry: "ca",
+      preferredCountries: ["ca", "lt", "us"],
+      nationalMode: false,
+      utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
+    });
 
-  for (let h = 0; h <= 8; h++) {
-    const optionH = document.createElement('option');
-    optionH.value = h;
-    optionH.textContent = h;
-    helpTimeSelectHours.appendChild(optionH);
-  }
+    const nameParam = new URLSearchParams(window.location.search).get("name");
+    const phoneParam = new URLSearchParams(window.location.search).get("phone");
 
-  const minuteOptions = [0, 15, 30, 45];
-  for (const m of minuteOptions) {
-    const optionM = document.createElement('option');
-    optionM.value = m;
-    optionM.textContent = m.toString().padStart(2, '0');
-    helpTimeSelectMinutes.appendChild(optionM);
-  }
+    if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
+    if (phoneParam) iti.setNumber(decodeURIComponent(phoneParam));
+
+    helpCheckbox.addEventListener('change', () => {
+      if (helpCheckbox.checked) {
+        helpTimeContainer.classList.add('show');
+        updateHelpTimes();
+      } else {
+        helpTimeContainer.classList.remove('show');
+      }
+    });
+
+    additionalCheckbox.addEventListener('change', () => {
+      if (additionalCheckbox.checked) {
+        additionalContainer.classList.add('show');
+      } else {
+        additionalContainer.classList.remove('show');
+      }
+    });
+
+    function updateHelpTimes() {
+      helpStartTimeSelect.innerHTML = '';
+      const startDate = new Date(startDateTimeInput.value);
+      if (isNaN(startDate)) return;
+
+      const mainDuration = parseInt(durationInput.value) || 0;
+      for (let i = 0; i <= mainDuration; i += 5) {
+        const time = new Date(startDate.getTime() + i * 60000);
+        const hh = time.getHours().toString().padStart(2, '0');
+        const mm = time.getMinutes().toString().padStart(2, '0');
+        const option = document.createElement('option');
+        option.value = `${hh}:${mm}`;
+        option.textContent = `${hh}:${mm}`;
+        helpStartTimeSelect.appendChild(option);
+      }
+    }
+
+    startDateTimeInput.addEventListener('change', () => {
+      if (helpCheckbox.checked) {
+        updateHelpTimes();
+      }
+    });
+
+    // *** ЗАМЕНА НА КОД ОТПРАВКИ НА GOOGLE APPS SCRIPT ***
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      if (!iti.isValidNumber()) {
+        alert('Введите корректный номер телефона');
+        phoneInput.focus();
+        return;
+      }
+
+      submitButton.disabled = true;
+      overlaySpinner.classList.add('show');
+
+      const phoneFormatted = iti.getNumber();
+      const startTime = new Date(startDateTimeInput.value);
+      const endTime = new Date(startTime.getTime() + parseInt(durationInput.value) * 60000);
+      const helpNeeded = helpCheckbox.checked;
+const helpStart = helpStartTimeSelect.value;
+const helpDuration = parseInt(helpDurationInput.value, 10);
+
+let descriptionParts = [];
+
+if (helpNeeded && helpStart) {
+  // Формируем время помощи в формате HH:mm и вычисляем конец помощи
+  const [helpStartH, helpStartM] = helpStart.split(':').map(Number);
+  const mainStartDate = new Date(startDateTimeInput.value);
+  const helpStartDate = new Date(mainStartDate);
+  helpStartDate.setHours(helpStartH, helpStartM, 0, 0);
+  const helpEndDate = new Date(helpStartDate.getTime() + helpDuration * 60000);
+
+  const formatTime = (date) => date.toTimeString().slice(0, 5);
+  const helpRange = `HELP ${formatTime(helpStartDate)}-${formatTime(helpEndDate)}`;
+  descriptionParts.push(helpRange);
 }
 
-helpCheckbox.addEventListener('change', () => {
-  if (helpCheckbox.checked) {
-    helpTimeContainer.classList.add('show');
-    populateHelpTimeSelectors();
-  } else {
-    helpTimeContainer.classList.remove('show');
-  }
+if (additionalCheckbox.checked && additionalNotesInput.value.trim()) {
+  descriptionParts.push(additionalNotesInput.value.trim());
+}
+
+const payload = new URLSearchParams({
+  title: `${document.getElementById('service').value}: ${document.getElementById('clientName').value}`,
+  description: descriptionParts.join('\n'),
+  location: phoneFormatted,
+  startTime: startTime.toISOString(),
+  endTime: endTime.toISOString(),
+  calendar: "master1"
 });
 
-// При отправке формы теперь собираем время помощи из двух селектов
-
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
-
-  if (!iti.isValidNumber()) {
-    alert('Введите корректный номер телефона');
-    phoneInput.focus();
-    return;
+fetch("https://script.google.com/macros/s/AKfycbzxAViVVAnE2Wm_MaT5T8wheiLQpEgRLR8P5PGdSTU7NDKLKrkFLNsmpCJaaXTtLcHe/exec", {
+  method: "POST",
+  body: payload
+})
+.then(response => response.json())
+.then(data => {
+  overlaySpinner.classList.remove('show');
+  submitButton.disabled = false;
+  if (data.status === "ok") {
+    successModal.style.display = 'flex';
+  } else {
+    alert("Ошибка: " + data.message);
   }
-
-  const totalDuration = getTotalDurationMinutes();
-  if (totalDuration <= 0) {
-    alert('Выберите длительность процедуры');
-    return;
-  }
-
-  submitButton.disabled = true;
-  overlaySpinner.classList.add('show');
-
-  const phoneFormatted = iti.getNumber();
-  const startTime = new Date(startDateTimeInput.value);
-  const endTime = new Date(startTime.getTime() + totalDuration * 60000);
-  const helpNeeded = helpCheckbox.checked;
-  let helpStartHours = 0;
-  let helpStartMinutes = 0;
-  if (helpNeeded) {
-    helpStartHours = parseInt(helpTimeSelectHours.value, 10) || 0;
-    helpStartMinutes = parseInt(helpTimeSelectMinutes.value, 10) || 0;
-  }
-  const helpDuration = parseInt(helpDurationInput.value, 10) || 0;
-
-  let descriptionParts = [];
-
-  if (helpNeeded) {
-    const helpStartDate = new Date(startTime);
-    helpStartDate.setHours(helpStartHours, helpStartMinutes, 0, 0);
-    const helpEndDate = new Date(helpStartDate.getTime() + helpDuration * 60000);
-
-    const formatTime = (date) => date.toTimeString().slice(0, 5);
-    const helpRange = `HELP ${formatTime(helpStartDate)}-${formatTime(helpEndDate)}`;
-    descriptionParts.push(helpRange);
-  }
-
-  if (additionalCheckbox.checked && additionalNotesInput.value.trim()) {
-    descriptionParts.push(additionalNotesInput.value.trim());
-  }
-
-  const payload = new URLSearchParams({
-    title: `${document.getElementById('service').value}: ${document.getElementById('clientName').value}`,
-    description: descriptionParts.join('\n'),
-    location: phoneFormatted,
-    startTime: startTime.toISOString(),
-    endTime: endTime.toISOString(),
-    calendar: "master1"
-  });
-
-  fetch("https://script.google.com/macros/s/AKfycbzxAViVVAnE2Wm_MaT5T8wheiLQpEgRLR8P5PGdSTU7NDKLKrkFLNsmpCJaaXTtLcHe/exec", {
-    method: "POST",
-    body: payload
-  })
-  .then(response => response.json())
-  .then(data => {
-    overlaySpinner.classList.remove('show');
-    submitButton.disabled = false;
-    if (data.status === "ok") {
-      successModal.style.display = 'flex';
-    } else {
-      alert("Ошибка: " + data.message);
-    }
-  })
-  .catch(err => {
-    overlaySpinner.classList.remove('show');
-    submitButton.disabled = false;
-    alert("Ошибка отправки: " + err.message);
-  });
+})
+.catch(err => {
+  overlaySpinner.classList.remove('show');
+  submitButton.disabled = false;
+  alert("Ошибка отправки: " + err.message);
+});
 });
 
 doneButton.addEventListener('click', () => {
@@ -603,8 +563,7 @@ doneButton.addEventListener('click', () => {
   helpTimeContainer.classList.remove('show');
   additionalContainer.classList.remove('show');
 });
-
-function applyTheme(isDark) {
+    function applyTheme(isDark) {
   if (isDark) {
     document.body.classList.add('dark');
   } else {
@@ -617,6 +576,6 @@ applyTheme(mediaQuery.matches);
 mediaQuery.addEventListener('change', e => {
   applyTheme(e.matches);
 });
-    </script>
+  </script>
 </body>
 </html>
