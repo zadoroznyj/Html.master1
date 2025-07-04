@@ -185,6 +185,23 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
+    /* Новые селекты в одну строку */
+    #durationContainer, #helpDurationContainer {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    #durationContainer select, #helpDurationContainer select {
+      flex: 1;
+      padding: 12px 14px;
+      font-size: 18px;
+      border-radius: 10px;
+      border: 1.5px solid #ccc;
+      font-family: inherit;
+      background: #fff;
+      box-sizing: border-box;
+    }
   </style>
 </head>
 <body>
@@ -203,8 +220,38 @@
     <option value="Другое">Другое</option>
   </select>
 
-  <label for="duration">Длительность (минут):</label>
-  <input type="number" id="duration" min="1" max="480" value="60" required>
+  <label for="durationHours">Длительность:</label>
+  <div id="durationContainer">
+    <select id="durationHours" required>
+      <option value="" disabled selected>Часы</option>
+      <option value="0">0</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+    </select>
+
+    <select id="durationMinutes" required>
+      <option value="" disabled selected>Минуты</option>
+      <!-- Генерируем шаг 5 минут -->
+      <option value="0">00</option>
+      <option value="5">05</option>
+      <option value="10">10</option>
+      <option value="15">15</option>
+      <option value="20">20</option>
+      <option value="25">25</option>
+      <option value="30">30</option>
+      <option value="35">35</option>
+      <option value="40">40</option>
+      <option value="45">45</option>
+      <option value="50">50</option>
+      <option value="55">55</option>
+    </select>
+  </div>
 
   <label for="clientName">Имя клиента:</label>
   <input type="text" id="clientName" required>
@@ -221,8 +268,36 @@
     <label for="helpStartTime">Время начала помощи:</label>
     <select id="helpStartTime"></select>
 
-    <label for="helpDuration">Длительность помощи (минут):</label>
-    <input type="number" id="helpDuration" min="1" max="60" step="1" value="30" />
+    <label for="helpDurationHours">Длительность помощи:</label>
+    <div id="helpDurationContainer">
+      <select id="helpDurationHours">
+        <option value="0" selected>0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+      </select>
+
+      <select id="helpDurationMinutes">
+        <!-- Минуты с шагом 5 -->
+        <option value="0" selected>00</option>
+        <option value="5">05</option>
+        <option value="10">10</option>
+        <option value="15">15</option>
+        <option value="20">20</option>
+        <option value="25">25</option>
+        <option value="30">30</option>
+        <option value="35">35</option>
+        <option value="40">40</option>
+        <option value="45">45</option>
+        <option value="50">50</option>
+        <option value="55">55</option>
+      </select>
+    </div>
   </div>
 
   <label class="checkbox-label">
@@ -257,18 +332,27 @@
 <script>
   const form = document.getElementById('appointmentForm');
   const startDateTimeInput = document.getElementById('startDateTime');
-  const durationInput = document.getElementById('duration');
+
+  const durationHoursSelect = document.getElementById('durationHours');
+  const durationMinutesSelect = document.getElementById('durationMinutes');
+
   const helpCheckbox = document.getElementById('helpCheckbox');
   const helpTimeContainer = document.getElementById('helpTimeContainer');
   const helpStartTimeSelect = document.getElementById('helpStartTime');
-  const helpDurationInput = document.getElementById('helpDuration');
+
+  const helpDurationHoursSelect = document.getElementById('helpDurationHours');
+  const helpDurationMinutesSelect = document.getElementById('helpDurationMinutes');
+
   const additionalCheckbox = document.getElementById('additionalCheckbox');
   const additionalContainer = document.getElementById('additionalContainer');
   const additionalNotesInput = document.getElementById('additionalNotes');
+
   const phoneInput = document.getElementById('clientPhone');
   const submitButton = document.getElementById('submitButton');
+
   const successModal = document.getElementById('successModal');
   const doneButton = document.getElementById('doneButton');
+
   const overlaySpinner = document.getElementById('overlaySpinner');
 
   // intl-tel-input инициализация
@@ -294,11 +378,25 @@
     additionalContainer.style.display = additionalCheckbox.checked ? 'block' : 'none';
   });
 
+  function getMainDurationMinutes() {
+    const h = parseInt(durationHoursSelect.value, 10);
+    const m = parseInt(durationMinutesSelect.value, 10);
+    if (isNaN(h) || isNaN(m)) return null;
+    return h * 60 + m;
+  }
+
+  function getHelpDurationMinutes() {
+    const h = parseInt(helpDurationHoursSelect.value, 10);
+    const m = parseInt(helpDurationMinutesSelect.value, 10);
+    if (isNaN(h) || isNaN(m)) return null;
+    return h * 60 + m;
+  }
+
   function updateHelpTimes() {
     helpStartTimeSelect.innerHTML = '';
     const start = new Date(startDateTimeInput.value);
-    const duration = parseInt(durationInput.value, 10);
-    if (!start || isNaN(duration)) return;
+    const duration = getMainDurationMinutes();
+    if (!start || duration === null) return;
 
     const end = new Date(start.getTime() + duration * 60000);
     for (let t = new Date(start); t < end; t.setMinutes(t.getMinutes() + 15)) {
@@ -311,16 +409,51 @@
 
   helpStartTimeSelect.addEventListener('change', () => {
     const mainStart = new Date(startDateTimeInput.value);
-    const mainEnd = new Date(mainStart.getTime() + parseInt(durationInput.value) * 60000);
+    const mainDuration = getMainDurationMinutes();
+    if (!mainStart || mainDuration === null) return;
+    const mainEnd = new Date(mainStart.getTime() + mainDuration * 60000);
+
     const helpStart = new Date(helpStartTimeSelect.value);
-    const max = Math.floor((mainEnd - helpStart) / 60000);
-    helpDurationInput.max = max > 0 ? max : 1;
-    if (helpDurationInput.value > helpDurationInput.max) {
-      helpDurationInput.value = helpDurationInput.max;
+    if (!helpStart) return;
+
+    const maxMinutes = Math.floor((mainEnd - helpStart) / 60000);
+    if (maxMinutes < 1) {
+      helpDurationHoursSelect.value = '0';
+      helpDurationMinutesSelect.value = '0';
+    } else {
+      let maxH = Math.floor(maxMinutes / 60);
+      let maxM = maxMinutes % 60;
+
+      // Подбираем минуты с шагом 5, не превышающие maxM
+      const minuteOptions = [0,5,10,15,20,25,30,35,40,45,50,55];
+      let chosenM = 0;
+      for (let i = minuteOptions.length - 1; i >= 0; i--) {
+        if (minuteOptions[i] <= maxM) {
+          chosenM = minuteOptions[i];
+          break;
+        }
+      }
+
+            let currentH = parseInt(helpDurationHoursSelect.value);
+      let currentM = parseInt(helpDurationMinutesSelect.value);
+
+      // Если текущие значения больше максимума, подкорректируем
+      if (currentH > maxH || (currentH === maxH && currentM > chosenM)) {
+        helpDurationHoursSelect.value = maxH.toString();
+        helpDurationMinutesSelect.value = chosenM.toString();
+      }
+
+      // Ограничим максимальные значения в селектах — для UX можно не менять, т.к. пользователь может выбрать меньше
+      // Но лучше не давать выбрать больше максимально возможного:
+      // Селект часов: options > maxH — можно отключить (disabled), но это необязательно
+      // Для простоты пока не трогаем options
     }
   });
 
-  durationInput.addEventListener('change', () => {
+  durationHoursSelect.addEventListener('change', () => {
+    if (helpCheckbox.checked) updateHelpTimes();
+  });
+  durationMinutesSelect.addEventListener('change', () => {
     if (helpCheckbox.checked) updateHelpTimes();
   });
 
@@ -336,16 +469,33 @@
       return;
     }
 
+    // Проверим, что длительность основной процедуры выбрана корректно (>0 минут)
+    const mainDuration = getMainDurationMinutes();
+    if (mainDuration === null || mainDuration < 1) {
+      alert("Выберите длительность процедуры (не менее 1 минуты).");
+      return;
+    }
+
+    // Если помощь нужна — проверим длительность помощи (>0)
+    if (helpCheckbox.checked) {
+      const helpDuration = getHelpDurationMinutes();
+      if (helpDuration === null || helpDuration < 1) {
+        alert("Выберите длительность помощи (не менее 1 минуты).");
+        return;
+      }
+    }
+
     // Показываем спиннер и блокируем кнопку
     overlaySpinner.classList.add('show');
     submitButton.disabled = true;
 
     const phoneFormatted = iti.getNumber();
     const startTime = new Date(startDateTimeInput.value);
-    const endTime = new Date(startTime.getTime() + parseInt(durationInput.value) * 60000);
+    const endTime = new Date(startTime.getTime() + mainDuration * 60000);
+
     const helpNeeded = helpCheckbox.checked;
     const helpStart = helpStartTimeSelect.value;
-    const helpDuration = parseInt(helpDurationInput.value);
+    const helpDuration = helpNeeded ? getHelpDurationMinutes() : 0;
 
     let descriptionParts = [];
 
