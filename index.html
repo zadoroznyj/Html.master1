@@ -367,8 +367,37 @@
         <option value="Другое">Другое</option>
       </select>
 
-      <label for="duration">Длительность (минут):</label>
-      <input type="number" id="duration" min="1" max="480" value="60" required>
+      <!-- Заменено поле длительности -->
+      <label>Длительность:</label>
+      <div style="display: flex; gap: 8px; margin-bottom: 18px;">
+        <select id="durationHours" required style="flex:1;">
+          <option value="" disabled selected>Часы</option>
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+        </select>
+        <select id="durationMinutes" required style="flex:1;">
+          <option value="" disabled selected>Минуты</option>
+          <option value="0">00</option>
+          <option value="5">05</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+          <option value="25">25</option>
+          <option value="30">30</option>
+          <option value="35">35</option>
+          <option value="40">40</option>
+          <option value="45">45</option>
+          <option value="50">50</option>
+          <option value="55">55</option>
+        </select>
+      </div>
 
       <label for="clientName">Имя клиента:</label>
       <input type="text" id="clientName" required>
@@ -385,8 +414,30 @@
         <label for="helpStartTime">Время начала помощи:</label>
         <select id="helpStartTime"></select>
 
-        <label for="helpDuration">Длительность помощи (минут):</label>
-        <input type="number" id="helpDuration" min="1" max="60" step="1" value="30" />
+        <!-- Заменено поле длительности помощи -->
+        <label>Длительность помощи:</label>
+        <div style="display: flex; gap: 8px; margin-bottom: 18px;">
+          <select id="helpDurationHours" style="flex:1;">
+            <option value="" disabled selected>Часы</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+          </select>
+          <select id="helpDurationMinutes" style="flex:1;">
+            <option value="" disabled selected>Минуты</option>
+            <option value="0">00</option>
+            <option value="5">05</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="30">30</option>
+            <option value="35">35</option>
+            <option value="40">40</option>
+            <option value="45">45</option>
+            <option value="50">50</option>
+            <option value="55">55</option>
+          </select>
+        </div>
       </div>
 
       <label class="checkbox-label">
@@ -420,11 +471,12 @@
   <script>
     const form = document.getElementById('appointmentForm');
     const startDateTimeInput = document.getElementById('startDateTime');
-    const durationInput = document.getElementById('duration');
+    // Убрали durationInput — больше не нужно
+
     const helpCheckbox = document.getElementById('helpCheckbox');
     const helpTimeContainer = document.getElementById('helpTimeContainer');
     const helpStartTimeSelect = document.getElementById('helpStartTime');
-    const helpDurationInput = document.getElementById('helpDuration');
+    // helpDurationInput убрали — теперь два селекта
     const additionalCheckbox = document.getElementById('additionalCheckbox');
     const additionalContainer = document.getElementById('additionalContainer');
     const additionalNotesInput = document.getElementById('additionalNotes');
@@ -434,126 +486,167 @@
     const doneButton = document.getElementById('doneButton');
     const overlaySpinner = document.getElementById('overlaySpinner');
 
-    const iti = window.intlTelInput(phoneInput, {
-      initialCountry: "ca",
-      preferredCountries: ["ca", "lt", "us"],
-      nationalMode: false,
-      utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
-    });
-
-    const nameParam = new URLSearchParams(window.location.search).get("name");
-    const phoneParam = new URLSearchParams(window.location.search).get("phone");
-
-    if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
-    if (phoneParam) iti.setNumber(decodeURIComponent(phoneParam));
-
-    helpCheckbox.addEventListener('change', () => {
-      if (helpCheckbox.checked) {
-        helpTimeContainer.classList.add('show');
-        updateHelpTimes();
-      } else {
-        helpTimeContainer.classList.remove('show');
-      }
-    });
-
-    additionalCheckbox.addEventListener('change', () => {
-      if (additionalCheckbox.checked) {
-        additionalContainer.classList.add('show');
-      } else {
-        additionalContainer.classList.remove('show');
-      }
-    });
-
-    function updateHelpTimes() {
-      helpStartTimeSelect.innerHTML = '';
-      const startDate = new Date(startDateTimeInput.value);
-      if (isNaN(startDate)) return;
-
-      const mainDuration = parseInt(durationInput.value) || 0;
-      for (let i = 0; i <= mainDuration; i += 5) {
-        const time = new Date(startDate.getTime() + i * 60000);
-        const hh = time.getHours().toString().padStart(2, '0');
-        const mm = time.getMinutes().toString().padStart(2, '0');
-        const option = document.createElement('option');
-        option.value = `${hh}:${mm}`;
-        option.textContent = `${hh}:${mm}`;
-        helpStartTimeSelect.appendChild(option);
-      }
-    }
-
-    startDateTimeInput.addEventListener('change', () => {
-      if (helpCheckbox.checked) {
-        updateHelpTimes();
-      }
-    });
-
-    // *** ЗАМЕНА НА КОД ОТПРАВКИ НА GOOGLE APPS SCRIPT ***
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      if (!iti.isValidNumber()) {
-        alert('Введите корректный номер телефона');
-        phoneInput.focus();
-        return;
-      }
-
-      submitButton.disabled = true;
-      overlaySpinner.classList.add('show');
-
-      const phoneFormatted = iti.getNumber();
-      const startTime = new Date(startDateTimeInput.value);
-      const endTime = new Date(startTime.getTime() + parseInt(durationInput.value) * 60000);
-      const helpNeeded = helpCheckbox.checked;
-const helpStart = helpStartTimeSelect.value;
-const helpDuration = parseInt(helpDurationInput.value, 10);
-
-let descriptionParts = [];
-
-if (helpNeeded && helpStart) {
-  // Формируем время помощи в формате HH:mm и вычисляем конец помощи
-  const [helpStartH, helpStartM] = helpStart.split(':').map(Number);
-  const mainStartDate = new Date(startDateTimeInput.value);
-  const helpStartDate = new Date(mainStartDate);
-  helpStartDate.setHours(helpStartH, helpStartM, 0, 0);
-  const helpEndDate = new Date(helpStartDate.getTime() + helpDuration * 60000);
-
-  const formatTime = (date) => date.toTimeString().slice(0, 5);
-  const helpRange = `HELP ${formatTime(helpStartDate)}-${formatTime(helpEndDate)}`;
-  descriptionParts.push(helpRange);
-}
-
-if (additionalCheckbox.checked && additionalNotesInput.value.trim()) {
-  descriptionParts.push(additionalNotesInput.value.trim());
-}
-
-const payload = new URLSearchParams({
-  title: `${document.getElementById('service').value}: ${document.getElementById('clientName').value}`,
-  description: descriptionParts.join('\n'),
-  location: phoneFormatted,
-  startTime: startTime.toISOString(),
-  endTime: endTime.toISOString(),
-  calendar: "master1"
+const iti = window.intlTelInput(phoneInput, {
+  initialCountry: "ca",
+  preferredCountries: ["ca", "lt", "us"],
+  nationalMode: false,
+  utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
 });
 
-fetch("https://script.google.com/macros/s/AKfycbzxAViVVAnE2Wm_MaT5T8wheiLQpEgRLR8P5PGdSTU7NDKLKrkFLNsmpCJaaXTtLcHe/exec", {
-  method: "POST",
-  body: payload
-})
-.then(response => response.json())
-.then(data => {
-  overlaySpinner.classList.remove('show');
-  submitButton.disabled = false;
-  if (data.status === "ok") {
-    successModal.style.display = 'flex';
+const nameParam = new URLSearchParams(window.location.search).get("name");
+const phoneParam = new URLSearchParams(window.location.search).get("phone");
+
+if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
+if (phoneParam) iti.setNumber(decodeURIComponent(phoneParam));
+
+helpCheckbox.addEventListener('change', () => {
+  if (helpCheckbox.checked) {
+    helpTimeContainer.classList.add('show');
+    updateHelpTimes();
   } else {
-    alert("Ошибка: " + data.message);
+    helpTimeContainer.classList.remove('show');
   }
-})
-.catch(err => {
-  overlaySpinner.classList.remove('show');
-  submitButton.disabled = false;
-  alert("Ошибка отправки: " + err.message);
 });
+
+additionalCheckbox.addEventListener('change', () => {
+  if (additionalCheckbox.checked) {
+    additionalContainer.classList.add('show');
+  } else {
+    additionalContainer.classList.remove('show');
+  }
+});
+
+function updateHelpTimes() {
+  helpStartTimeSelect.innerHTML = '';
+  const startDate = new Date(startDateTimeInput.value);
+  if (isNaN(startDate)) return;
+
+  // Получаем основную длительность в минутах из селектов
+  const durHours = parseInt(document.getElementById('durationHours').value, 10);
+  const durMinutes = parseInt(document.getElementById('durationMinutes').value, 10);
+  if (isNaN(durHours) || isNaN(durMinutes)) return;
+  const mainDuration = durHours * 60 + durMinutes;
+
+  for (let i = 0; i <= mainDuration; i += 5) {
+    const time = new Date(startDate.getTime() + i * 60000);
+    const hh = time.getHours().toString().padStart(2, '0');
+    const mm = time.getMinutes().toString().padStart(2, '0');
+    const option = document.createElement('option');
+    option.value = `${hh}:${mm}`;
+    option.textContent = `${hh}:${mm}`;
+    helpStartTimeSelect.appendChild(option);
+  }
+}
+
+startDateTimeInput.addEventListener('change', () => {
+  if (helpCheckbox.checked) {
+    updateHelpTimes();
+  }
+});
+
+// Также при изменении длительности процедуры обновляем help times, если чекбокс активен
+document.getElementById('durationHours').addEventListener('change', () => {
+  if (helpCheckbox.checked) updateHelpTimes();
+});
+document.getElementById('durationMinutes').addEventListener('change', () => {
+  if (helpCheckbox.checked) updateHelpTimes();
+});
+
+// *** ЗАМЕНА НА КОД ОТПРАВКИ НА GOOGLE APPS SCRIPT ***
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  if (!iti.isValidNumber()) {
+    alert('Введите корректный номер телефона');
+    phoneInput.focus();
+    return;
+  }
+
+  // Проверяем, что длительность процедуры выбрана корректно
+  const durHoursVal = parseInt(document.getElementById('durationHours').value, 10);
+  const durMinutesVal = parseInt(document.getElementById('durationMinutes').value, 10);
+  if (isNaN(durHoursVal) || isNaN(durMinutesVal)) {
+    alert('Пожалуйста, укажите длительность процедуры (часы и минуты).');
+    return;
+  }
+  const totalDuration = durHoursVal * 60 + durMinutesVal;
+  if (totalDuration <= 0) {
+    alert('Длительность процедуры должна быть больше 0 минут.');
+    return;
+  }
+
+  // Если помощь нужна, проверяем длительность помощи тоже (если заполнено)
+  let helpDurationTotal = 0;
+  if (helpCheckbox.checked) {
+    const helpHours = parseInt(document.getElementById('helpDurationHours').value, 10);
+    const helpMinutes = parseInt(document.getElementById('helpDurationMinutes').value, 10);
+
+    if (isNaN(helpHours) || isNaN(helpMinutes)) {
+      alert('Пожалуйста, укажите длительность помощи (часы и минуты).');
+      return;
+    }
+    helpDurationTotal = helpHours * 60 + helpMinutes;
+    if (helpDurationTotal <= 0) {
+      alert('Длительность помощи должна быть больше 0 минут.');
+      return;
+    }
+  }
+
+  submitButton.disabled = true;
+  overlaySpinner.classList.add('show');
+
+  const phoneFormatted = iti.getNumber();
+  const startTime = new Date(startDateTimeInput.value);
+  const endTime = new Date(startTime.getTime() + totalDuration * 60000);
+  const helpNeeded = helpCheckbox.checked;
+  const helpStart = helpStartTimeSelect.value;
+
+  let descriptionParts = [];
+
+  if (helpNeeded && helpStart) {
+    const [helpStartH, helpStartM] = helpStart.split(':').map(Number);
+    const mainStartDate = new Date(startDateTimeInput.value);
+    const helpStartDate = new Date(mainStartDate);
+    helpStartDate.setHours(helpStartH, helpStartM, 0, 0);
+    const helpEndDate = new Date(helpStartDate.getTime() + helpDurationTotal * 60000);
+
+    const formatTime = (date) => date.toTimeString().slice(0, 5);
+    const helpRange = `HELP ${formatTime(helpStartDate)}-${formatTime(helpEndDate)}`;
+    descriptionParts.push(helpRange);
+  }
+
+  if (additionalCheckbox.checked && additionalNotesInput.value.trim()) {
+    descriptionParts.push(additionalNotesInput.value.trim());
+  }
+
+  const payload = new URLSearchParams({
+    title: `${document.getElementById('service').value}: ${document.getElementById('clientName').value}`,
+    description: descriptionParts.join('\n'),
+    location: phoneFormatted,
+    startTime: startTime.toISOString(),
+    endTime: endTime.toISOString(),
+    calendar: "master1"
+  });
+
+  fetch("https://script.google.com/macros/s/AKfycbzxAViVVAnE2Wm_MaT5T8wheiLQpEgRLR8P5PGdSTU7NDKLKrkFLNsmpCJaaXTtLcHe/exec", {
+    method: "POST",
+    body: payload
+  })
+  .then(response => response.json())
+  .then(data => {
+    overlaySpinner.classList.remove('show');
+    submitButton.disabled = false;
+    if (data.status === "ok") {
+      successModal.style.display = 'flex';
+    } else {
+      alert("Ошибка: " + data.message);
+    }
+  })
+  .catch(err => {
+    overlaySpinner.classList.remove('show');
+    submitButton.disabled = false;
+    alert("Ошибка отправки: " + err.message);
+  });
 });
 
 doneButton.addEventListener('click', () => {
@@ -563,7 +656,8 @@ doneButton.addEventListener('click', () => {
   helpTimeContainer.classList.remove('show');
   additionalContainer.classList.remove('show');
 });
-    function applyTheme(isDark) {
+
+function applyTheme(isDark) {
   if (isDark) {
     document.body.classList.add('dark');
   } else {
