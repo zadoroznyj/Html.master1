@@ -492,6 +492,41 @@
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+    alert("🟡 Submit начался");
+
+console.log("✅ Начали отправку формы");
+
+if (!iti.isValidNumber()) {
+  alert("❌ Телефон некорректный");
+  return;
+}
+
+const phoneFormatted = iti.getNumber();
+const startTime = new Date(startDateTimeInput.value);
+const endTime = new Date(startTime.getTime() + getMainDurationMinutes() * 60000);
+
+alert("📤 Отправляем данные:\n" +
+  "Название: " + mainServiceSelect.value + "\n" +
+  "Время: " + startTime.toISOString());
+
+fetch("https://script.google.com/macros/s/AKfycbz-YaS7ommxIWUYCvosl8P7nX8VOQ-bnvds8axK2Dfb_oojA7hG4SvH03OLI6F37ucQ/exec", {
+  method: "POST",
+  body: new URLSearchParams({
+    title: `${mainServiceSelect.value}: ${document.getElementById('clientName').value}`,
+    description: "test",
+    location: phoneFormatted,
+    startTime: startTime.toISOString(),
+    endTime: endTime.toISOString(),
+    calendar: "master1"
+  })
+})
+.then(res => res.text())
+.then(text => {
+  alert("🟢 Ответ сервера: " + text);
+})
+.catch(err => {
+  alert("🔴 Ошибка fetch: " + err.message);
+});
 
     if (!iti.isValidNumber()) {
       alert("Введите корректный номер телефона.");
