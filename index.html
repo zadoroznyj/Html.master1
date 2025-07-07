@@ -391,27 +391,38 @@
   if (phoneParam) phoneInput.value = decodeURIComponent(phoneParam);
 
   function setDefaultDuration(serviceName, hoursSelect, minutesSelect) {
-    const defaults = {
-      "Airtouch": { h: 4, m: 0 },
-      "Bangs Trim": { h: 0, m: 30 },
-      "Blow Dry": { h: 0, m: 40 },
-      "Botox": { h: 3, m: 0 },
-      "Blond Botox": { h: 2, m: 30 },
-      "Cold Botox": { h: 2, m: 0 },
-      "Full Colour Short": { h: 2, m: 0 },
-      "Full Colour Long": { h: 2, m: 0 },
-      "Haircut": { h: 1, m: 30 },
-      "Roots": { h: 1, m: 30 },
-      "Toner": { h: 0, m: 45 },
-      "Highlights": { h: 3, m: 0 },
-      "Highlight Full Head Long": { h: 4, m: 0 },
-      "Highlight Half Head": { h: 2, m: 0 },
-      "Roots Organic": { h: 2, m: 30 },
-      "Hair Color Medium": { h: 2, m: 0 },
-      "Highlights Short Hair": { h: 3, m: 0 },
-      "Olapex": { h: 1, m: 0 },
-      "Mens Cut": { h: 1, m: 0 },
+  const defaults = {
+    "Airtouch": { h: 4, m: 0 },
+    "Bangs Trim": { h: 0, m: 30 },
+    "Blow Dry": { h: 0, m: 40 },
+    "Botox": { h: 3, m: 0 },
+    "Blond Botox": { h: 2, m: 30 },
+    "Cold Botox": { h: 2, m: 0 },
+    "Full Colour Short": { h: 2, m: 0 },
+    "Full Colour Long": { h: 2, m: 0 },
+    "Haircut": { h: 1, m: 30 },
+    "Roots": { h: 1, m: 30 },
+    "Toner": { h: 0, m: 45 },
+    "Highlights": { h: 3, m: 0 },
+    "Highlight Full Head Long": { h: 4, m: 0 },
+    "Highlight Half Head": { h: 2, m: 0 },
+    "Roots Organic": { h: 2, m: 30 },
+    "Hair Color Medium": { h: 2, m: 0 },
+    "Highlights Short Hair": { h: 3, m: 0 },
+    "Olapex": { h: 1, m: 0 },
+    "Mens Cut": { h: 1, m: 0 },
+    "Стрижка": { h: 1, m: 0 },
+    "Покраска": { h: 2, m: 0 },
+    "Наращивание": { h: 3, m: 0 },
+    "Другое": { h: 1, m: 0 }
+  };
+
+  const def = defaults[serviceName];
+  if (def) {
+    hoursSelect.value = def.h.toString();
+    minutesSelect.value = def.m.toString();
   }
+}
 
   function getMainDurationMinutes() {
     const h = parseInt(durationHoursSelect.value, 10);
