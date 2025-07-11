@@ -20,8 +20,8 @@
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(to right top, #fdf0f3, #e5eafc, #f3f8ff);
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
+      flex-direction: column;
+      align-items: center;
       min-height: 100vh;
     }
     .form-container {
@@ -32,6 +32,7 @@
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
       max-width: 480px;
       width: 100%;
+      margin-bottom: 40px;
     }
     h2 {
       text-align: center;
@@ -182,9 +183,6 @@
       animation: spin 1s linear infinite;
       margin: auto;
     }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
 
     /* Новые селекты в одну строку */
     #durationContainer, #helpDurationContainer {
@@ -202,100 +200,62 @@
       background: #fff;
       box-sizing: border-box;
     }
+
+    /* Стили для встроенного iframe Cal.com */
+    #calcomWidgetContainer {
+      width: 100%;
+      max-width: 480px;
+      height: 700px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+      margin-bottom: 40px;
+    }
+    #calcomWidgetContainer iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
   </style>
 </head>
 <body>
   <form class="form-container" id="appointmentForm" autocomplete="off" spellcheck="false">
-  <h2>Запись на процедуру</h2>
+    <h2>Запись на процедуру</h2>
 
-  <label for="startDateTime">Дата и время начала:</label>
-  <input type="datetime-local" id="startDateTime" required>
+    <label for="startDateTime">Дата и время начала:</label>
+    <input type="datetime-local" id="startDateTime" required>
 
-  <label for="service">Услуга:</label>
-  <select id="service" required>
-    <option value="" disabled selected>-- выберите --</option>
-    <option value="Airtouch">Airtouch</option>
-    <option value="Bangs Trim">Bangs Trim</option>
-    <option value="Blow Dry">Blow Dry</option>
-    <option value="Botox">Botox</option>
-    <option value="Blond Botox">Blond Botox</option>
-    <option value="Cold Botox">Cold Botox</option>
-    <option value="Full Colour Short">Full Colour Short</option>
-    <option value="Full Colour Long">Full Colour Long</option>
-    <option value="Haircut">Haircut</option>
-    <option value="Roots">Roots</option>
-    <option value="Root Bleach">Root Bleach</option>
-    <option value="Toner">Toner</option>
-    <option value="Highlights">Highlights</option>
-    <option value="Highlight Full Head Long">Highlight Full Head Long</option>
-    <option value="Highlight Half Head">Highlight Half Headt</option>
-    <option value="Highlights Short Hair">Highlights Short Hair</option>
-    <option value="Roots Organic">Roots Organic</option>
-    <option value="Hair Color Medium">Hair Color Medium</option>
-    <option value="Olapex">Olapex</option>
-    <option value="Mens Cut">Mens Cut</option>
-  </select>
-
-  <label for="durationHours">Длительность:</label>
-  <div id="durationContainer">
-    <select id="durationHours" required>
-      <option value="" disabled selected>Часы</option>
-      <option value="0">0</option>
-      <option value="1">1</option>
-      <option value="2">2</option>
-      <option value="3">3</option>
-      <option value="4">4</option>
-      <option value="5">5</option>
-      <option value="6">6</option>
-      <option value="7">7</option>
-      <option value="8">8</option>
+    <label for="service">Услуга:</label>
+    <select id="service" required>
+      <option value="" disabled selected>-- выберите --</option>
+      <option value="Airtouch">Airtouch</option>
+      <option value="Bangs Trim">Bangs Trim</option>
+      <option value="Blow Dry">Blow Dry</option>
+      <option value="Botox">Botox</option>
+      <option value="Blond Botox">Blond Botox</option>
+      <option value="Cold Botox">Cold Botox</option>
+      <option value="Full Colour Short">Full Colour Short</option>
+      <option value="Full Colour Long">Full Colour Long</option>
+      <option value="Haircut">Haircut</option>
+      <option value="Roots">Roots</option>
+      <option value="Root Bleach">Root Bleach</option>
+      <option value="Toner">Toner</option>
+      <option value="Highlights">Highlights</option>
+      <option value="Highlight Full Head Long">Highlight Full Head Long</option>
+      <option value="Highlight Half Head">Highlight Half Headt</option>
+      <option value="Highlights Short Hair">Highlights Short Hair</option>
+      <option value="Roots Organic">Roots Organic</option>
+      <option value="Hair Color Medium">Hair Color Medium</option>
+      <option value="Olapex">Olapex</option>
+      <option value="Mens Cut">Mens Cut</option>
     </select>
 
-    <select id="durationMinutes" required>
-      <option value="" disabled selected>Минуты</option>
-      <option value="0">00</option>
-      <option value="5">05</option>
-      <option value="10">10</option>
-      <option value="15">15</option>
-      <option value="20">20</option>
-      <option value="25">25</option>
-      <option value="30">30</option>
-      <option value="35">35</option>
-      <option value="40">40</option>
-      <option value="45">45</option>
-      <option value="50">50</option>
-      <option value="55">55</option>
-    </select>
-  </div>
-
-  <label for="clientName">Имя клиента:</label>
-  <input type="text" id="clientName" required>
-
-  <label for="clientPhone">Телефон:</label>
-  <input type="tel" id="clientPhone" required placeholder="Введите номер телефона">
-
-  <label class="checkbox-label">
-    <input type="checkbox" id="helpCheckbox" />
-    Передать клиента Ирине
-  </label>
-
-  <div id="helpTimeContainer">
-    <label for="helpStartTime">Время начала:</label>
-<select id="helpStartTime"></select>
-
-<label for="helpService">Услуга:</label>
-<select id="helpService" required>
-  <option value="" disabled selected>-- выберите --</option>
-  <option value="Стрижка">Стрижка</option>
-  <option value="Покраска">Покраска</option>
-  <option value="Наращивание">Наращивание</option>
-  <option value="Другое">Другое</option>
-</select>
-
-    <label for="helpDurationHours">Длительность:</label>
-    <div id="helpDurationContainer">
-      <select id="helpDurationHours">
-        <option value="0" selected>0</option>
+    <label for="durationHours">Длительность:</label>
+    <div id="durationContainer">
+      <select id="durationHours" required>
+        <option value="" disabled selected>Часы</option>
+        <option value="0">0</option>
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="3">3</option>
@@ -306,8 +266,9 @@
         <option value="8">8</option>
       </select>
 
-      <select id="helpDurationMinutes">
-        <option value="0" selected>00</option>
+      <select id="durationMinutes" required>
+        <option value="" disabled selected>Минуты</option>
+        <option value="0">00</option>
         <option value="5">05</option>
         <option value="10">10</option>
         <option value="15">15</option>
@@ -321,292 +282,263 @@
         <option value="55">55</option>
       </select>
     </div>
+
+    <label for="clientName">Имя клиента:</label>
+    <input type="text" id="clientName" required>
+
+    <label for="clientPhone">Телефон:</label>
+    <input type="tel" id="clientPhone" required placeholder="Введите номер телефона">
+
+    <label class="checkbox-label">
+      <input type="checkbox" id="helpCheckbox" />
+      Передать клиента Ирине
+    </label>
+
+    <div id="helpTimeContainer">
+      <label for="helpStartTime">Время начала:</label>
+      <select id="helpStartTime"></select>
+
+      <label for="helpService">Услуга:</label>
+      <select id="helpService" required>
+        <option value="" disabled selected>-- выберите --</option>
+        <option value="Стрижка">Стрижка</option>
+        <option value="Покраска">Покраска</option>
+        <option value="Наращивание">Наращивание</option>
+        <option value="Другое">Другое</option>
+      </select>
+
+      <label for="helpDurationHours">Длительность:</label>
+      <div id="helpDurationContainer">
+        <select id="helpDurationHours">
+          <option value="0" selected>0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+        </select>
+
+        <select id="helpDurationMinutes">
+          <option value="0" selected>00</option>
+          <option value="5">05</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+          <option value="25">25</option>
+          <option value="30">30</option>
+          <option value="35">35</option>
+          <option value="40">40</option>
+          <option value="45">45</option>
+          <option value="50">50</option>
+          <option value="55">55</option>
+        </select>
+      </div>
+    </div>
+
+    <label class="checkbox-label">
+      <input type="checkbox" id="additionalCheckbox" />
+      Дополнительно
+    </label>
+
+    <div id="additionalContainer">
+      <label for="additionalNotes">Дополнительная заметка:</label>
+      <textarea id="additionalNotes" rows="3" placeholder="Введите заметку..."></textarea>
+    </div>
+
+    <button type="submit" id="submitButton">Создать запись</button>
+  </form>
+
+  <div id="successModal">
+    <div class="modal-content">
+      <h3>Запись успешно создана!</h3>
+      <p>Спасибо за запись.</p>
+      <button id="doneButton">Готово</button>
+    </div>
   </div>
 
-  <label class="checkbox-label">
-    <input type="checkbox" id="additionalCheckbox" />
-    Дополнительно
-  </label>
-
-  <div id="additionalContainer">
-    <label for="additionalNotes">Дополнительная заметка:</label>
-    <textarea id="additionalNotes" rows="3" placeholder="Введите заметку..."></textarea>
+  <div id="overlaySpinner">
+    <div class="spinner"></div>
   </div>
 
-  <button type="submit" id="submitButton">Создать запись</button>
-</form>
-
-<div id="successModal">
-  <div class="modal-content">
-    <h3>Запись успешно создана!</h3>
-    <p>Спасибо за запись.</p>
-    <button id="doneButton">Готово</button>
+  <!-- Встроенный виджет Cal.com через iframe -->
+  <div id="calcomWidgetContainer">
+    <h2>Записаться через Cal.com</h2>
+    <iframe
+      src="https://cal.com/zadoroznyj"
+      title="Запись на процедуру Cal.com"
+      loading="lazy"
+    ></iframe>
   </div>
-</div>
 
-<div id="overlaySpinner">
-  <div class="spinner"></div>
-</div>
+  <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"></script>
+  <script>
+    const form = document.getElementById('appointmentForm');
+    const startDateTimeInput = document.getElementById('startDateTime');
 
-<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"></script>
-<script>
-  const form = document.getElementById('appointmentForm');
-  const startDateTimeInput = document.getElementById('startDateTime');
+    const mainServiceSelect = document.getElementById('service');
+    const durationHoursSelect = document.getElementById('durationHours');
+    const durationMinutesSelect = document.getElementById('durationMinutes');
 
-  const mainServiceSelect = document.getElementById('service');
-  const durationHoursSelect = document.getElementById('durationHours');
-  const durationMinutesSelect = document.getElementById('durationMinutes');
+    const helpCheckbox = document.getElementById('helpCheckbox');
+    const helpTimeContainer = document.getElementById('helpTimeContainer');
+    const helpStartTimeSelect = document.getElementById('helpStartTime');
+    const helpServiceSelect = document.getElementById('helpService');
+    const helpDurationHoursSelect = document.getElementById('helpDurationHours');
+    const helpDurationMinutesSelect = document.getElementById('helpDurationMinutes');
 
-  const helpCheckbox = document.getElementById('helpCheckbox');
-  const helpTimeContainer = document.getElementById('helpTimeContainer');
-  const helpStartTimeSelect = document.getElementById('helpStartTime');
-  const helpServiceSelect = document.getElementById('helpService');
-  const helpDurationHoursSelect = document.getElementById('helpDurationHours');
-  const helpDurationMinutesSelect = document.getElementById('helpDurationMinutes');
+    const additionalCheckbox = document.getElementById('additionalCheckbox');
+    const additionalContainer = document.getElementById('additionalContainer');
+    const additionalNotesInput = document.getElementById('additionalNotes');
 
-  const additionalCheckbox = document.getElementById('additionalCheckbox');
-  const additionalContainer = document.getElementById('additionalContainer');
-  const additionalNotesInput = document.getElementById('additionalNotes');
+    const phoneInput = document.getElementById('clientPhone');
+    const submitButton = document.getElementById('submitButton');
 
-  const phoneInput = document.getElementById('clientPhone');
-  const submitButton = document.getElementById('submitButton');
+    const successModal = document.getElementById('successModal');
+    const doneButton = document.getElementById('doneButton');
 
-  const successModal = document.getElementById('successModal');
-  const doneButton = document.getElementById('doneButton');
+    const overlaySpinner = document.getElementById('overlaySpinner');
 
-  const overlaySpinner = document.getElementById('overlaySpinner');
+    const iti = window.intlTelInput(phoneInput, {
+      initialCountry: "ca",
+      preferredCountries: ["ca", "lt", "us"],
+      nationalMode: false,
+      utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
+    });
 
-  const iti = window.intlTelInput(phoneInput, {
-    initialCountry: "ca",
-    preferredCountries: ["ca", "lt", "us"],
-    nationalMode: false,
-    utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
-  });
+    const nameParam = new URLSearchParams(window.location.search).get("name");
+    const phoneParam = new URLSearchParams(window.location.search).get("phone");
 
-  const nameParam = new URLSearchParams(window.location.search).get("name");
-  const phoneParam = new URLSearchParams(window.location.search).get("phone");
+    if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
+    if (phoneParam) phoneInput.value = decodeURIComponent(phoneParam);
 
-  if (nameParam) document.getElementById('clientName').value = decodeURIComponent(nameParam);
-  if (phoneParam) phoneInput.value = decodeURIComponent(phoneParam);
+    function setDefaultDuration(serviceName, hoursSelect, minutesSelect) {
+      const defaults = {
+        "Airtouch": { h: 4, m: 0 },
+        "Bangs Trim": { h: 0, m: 30 },
+        "Blow Dry": { h: 0, m: 40 },
+        "Botox": { h: 3, m: 0 },
+        "Blond Botox": { h: 2, m: 30 },
+        "Cold Botox": { h: 2, m: 0 },
+        "Full Colour Short": { h: 2, m: 0 },
+        "Full Colour Long": { h: 2, m: 0 },
+        "Haircut": { h: 1, m: 30 },
+        "Roots": { h: 1, m: 30 },
+        "Toner": { h: 0, m: 45 },
+        "Highlights": { h: 3, m: 0 },
+        "Highlight Full Head Long": { h: 4, m: 0 },
+        "Highlight Half Head": { h: 2, m: 0 },
+        "Roots Organic": { h: 2, m: 30 },
+"Hair Color Medium": { h: 2, m: 0 },
+"Olapex": { h: 1, m: 30 },
+"Mens Cut": { h: 1, m: 0 }
+};
 
-  function setDefaultDuration(serviceName, hoursSelect, minutesSelect) {
-  const defaults = {
-    "Airtouch": { h: 4, m: 0 },
-    "Bangs Trim": { h: 0, m: 30 },
-    "Blow Dry": { h: 0, m: 40 },
-    "Botox": { h: 3, m: 0 },
-    "Blond Botox": { h: 2, m: 30 },
-    "Cold Botox": { h: 2, m: 0 },
-    "Full Colour Short": { h: 2, m: 0 },
-    "Full Colour Long": { h: 2, m: 0 },
-    "Haircut": { h: 1, m: 30 },
-    "Roots": { h: 1, m: 30 },
-    "Toner": { h: 0, m: 45 },
-    "Highlights": { h: 3, m: 0 },
-    "Highlight Full Head Long": { h: 4, m: 0 },
-    "Highlight Half Head": { h: 2, m: 0 },
-    "Roots Organic": { h: 2, m: 30 },
-    "Hair Color Medium": { h: 2, m: 0 },
-    "Highlights Short Hair": { h: 3, m: 0 },
-    "Olapex": { h: 1, m: 0 },
-    "Mens Cut": { h: 1, m: 0 },
+function updateDurationDefaults(selectService, hoursSelect, minutesSelect) {
+  const service = selectService.value;
+  if (defaults[service]) {
+    hoursSelect.value = defaults[service].h.toString();
+    minutesSelect.value = defaults[service].m.toString();
+  } else {
+    hoursSelect.value = "";
+    minutesSelect.value = "";
+  }
+}
+
+mainServiceSelect.addEventListener("change", () => {
+  updateDurationDefaults(mainServiceSelect, durationHoursSelect, durationMinutesSelect);
+});
+
+helpCheckbox.addEventListener("change", () => {
+  if (helpCheckbox.checked) {
+    helpTimeContainer.style.display = "block";
+    // Заполнить селект времени для помощника
+    populateHelpStartTimeOptions();
+  } else {
+    helpTimeContainer.style.display = "none";
+  }
+});
+
+additionalCheckbox.addEventListener("change", () => {
+  additionalContainer.style.display = additionalCheckbox.checked ? "block" : "none";
+});
+
+// Функция для заполнения времени начала для помощника (например, каждые 15 минут с 9:00 до 18:00)
+function populateHelpStartTimeOptions() {
+  helpStartTimeSelect.innerHTML = "";
+  const startHour = 9;
+  const endHour = 18;
+  for (let h = startHour; h <= endHour; h++) {
+    for (let m = 0; m < 60; m += 15) {
+      const hh = h.toString().padStart(2, "0");
+      const mm = m.toString().padStart(2, "0");
+      const timeStr = `${hh}:${mm}`;
+      const option = document.createElement("option");
+      option.value = timeStr;
+      option.textContent = timeStr;
+      helpStartTimeSelect.appendChild(option);
+    }
+  }
+}
+
+// Обработчик формы
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  // Проверка номера телефона
+  if (!iti.isValidNumber()) {
+    alert("Пожалуйста, введите корректный номер телефона.");
+    phoneInput.focus();
+    return;
+  }
+
+  // Включаем спиннер
+  overlaySpinner.classList.add("show");
+  submitButton.disabled = true;
+
+  // Собираем данные
+  const data = {
+    startDateTime: startDateTimeInput.value,
+    service: mainServiceSelect.value,
+    durationHours: durationHoursSelect.value,
+    durationMinutes: durationMinutesSelect.value,
+    clientName: document.getElementById("clientName").value.trim(),
+    clientPhone: iti.getNumber(),
+    help: helpCheckbox.checked ? {
+      startTime: helpStartTimeSelect.value,
+      service: helpServiceSelect.value,
+      durationHours: helpDurationHoursSelect.value,
+      durationMinutes: helpDurationMinutesSelect.value
+    } : null,
+    additionalNotes: additionalCheckbox.checked ? additionalNotesInput.value.trim() : null,
   };
 
-  const def = defaults[serviceName];
-  if (def) {
-    hoursSelect.value = def.h.toString();
-    minutesSelect.value = def.m.toString();
-  }
-}
+  // Здесь можно отправить данные на сервер через fetch или XMLHttpRequest
+  // Для демонстрации — имитация успешной отправки через setTimeout
 
-  function getMainDurationMinutes() {
-    const h = parseInt(durationHoursSelect.value, 10);
-    const m = parseInt(durationMinutesSelect.value, 10);
-    return (isNaN(h) || isNaN(m)) ? null : h * 60 + m;
-  }
+  setTimeout(() => {
+    overlaySpinner.classList.remove("show");
+    submitButton.disabled = false;
+    successModal.style.display = "flex";
+  }, 1500);
+});
 
-  function getHelpDurationMinutes() {
-    const h = parseInt(helpDurationHoursSelect.value, 10);
-    const m = parseInt(helpDurationMinutesSelect.value, 10);
-    return (isNaN(h) || isNaN(m)) ? null : h * 60 + m;
-  }
+// Закрытие модального окна
+doneButton.addEventListener("click", () => {
+  successModal.style.display = "none";
+  form.reset();
+  helpTimeContainer.style.display = "none";
+  additionalContainer.style.display = "none";
+  // Сбросить intlTelInput
+  iti.setNumber("");
+});
 
-  function updateHelpTimes() {
-  helpStartTimeSelect.innerHTML = '';
-  const start = new Date(startDateTimeInput.value);
-  const duration = getMainDurationMinutes();
-  if (!start || duration === null) return;
+// Инициализация: выставляем дефолтную длительность для выбранной услуги, если есть
+updateDurationDefaults(mainServiceSelect, durationHoursSelect, durationMinutesSelect);
 
-  const end = new Date(start.getTime() + duration * 60000);
-  for (let t = new Date(start); t <= end; t.setMinutes(t.getMinutes() + 15)) {
-    const option = document.createElement('option');
-    option.value = t.toISOString();
-    option.textContent = t.toTimeString().slice(0, 5);
-    helpStartTimeSelect.appendChild(option);
-  }
-
-  // Установка дефолтного начала помощи — в конец основной процедуры (ровно во сколько она закончится)
-  for (let i = 0; i < helpStartTimeSelect.options.length; i++) {
-    if (new Date(helpStartTimeSelect.options[i].value).getTime() === end.getTime()) {
-      helpStartTimeSelect.selectedIndex = i;
-      break;
-    }
-  }
-}
-
-  mainServiceSelect.addEventListener('change', () => {
-    setDefaultDuration(mainServiceSelect.value, durationHoursSelect, durationMinutesSelect);
-    if (helpCheckbox.checked) updateHelpTimes();
-  });
-
-  helpServiceSelect.addEventListener('change', () => {
-    setDefaultDuration(helpServiceSelect.value, helpDurationHoursSelect, helpDurationMinutesSelect);
-  });
-
-  helpCheckbox.addEventListener('change', () => {
-    helpTimeContainer.style.display = helpCheckbox.checked ? 'block' : 'none';
-
-    if (helpCheckbox.checked) {
-      helpServiceSelect.value = mainServiceSelect.value || "";
-      if (helpServiceSelect.value) {
-        setDefaultDuration(helpServiceSelect.value, helpDurationHoursSelect, helpDurationMinutesSelect);
-      }
-      updateHelpTimes();
-    }
-  });
-
-  additionalCheckbox.addEventListener('change', () => {
-    additionalContainer.style.display = additionalCheckbox.checked ? 'block' : 'none';
-  });
-
-  helpStartTimeSelect.addEventListener('change', () => {
-    const mainStart = new Date(startDateTimeInput.value);
-    const mainDuration = getMainDurationMinutes();
-    if (!mainStart || mainDuration === null) return;
-    const mainEnd = new Date(mainStart.getTime() + mainDuration * 60000);
-
-    const helpStart = new Date(helpStartTimeSelect.value);
-    if (!helpStart) return;
-
-    const maxMinutes = Math.floor((mainEnd - helpStart) / 60000);
-    if (maxMinutes < 1) {
-      helpDurationHoursSelect.value = '0';
-      helpDurationMinutesSelect.value = '0';
-    } else {
-      let maxH = Math.floor(maxMinutes / 60);
-      let maxM = maxMinutes % 60;
-      const minuteOptions = [0,5,10,15,20,25,30,35,40,45,50,55];
-      let chosenM = 0;
-      for (let i = minuteOptions.length - 1; i >= 0; i--) {
-        if (minuteOptions[i] <= maxM) {
-          chosenM = minuteOptions[i];
-          break;
-        }
-      }
-      const currentH = parseInt(helpDurationHoursSelect.value, 10);
-      const currentM = parseInt(helpDurationMinutesSelect.value, 10);
-      if (currentH > maxH || (currentH === maxH && currentM > chosenM)) {
-        helpDurationHoursSelect.value = maxH.toString();
-        helpDurationMinutesSelect.value = chosenM.toString();
-      }
-    }
-  });
-
-  durationHoursSelect.addEventListener('change', () => {
-    if (helpCheckbox.checked) updateHelpTimes();
-  });
-  durationMinutesSelect.addEventListener('change', () => {
-    if (helpCheckbox.checked) updateHelpTimes();
-  });
-
-  startDateTimeInput.addEventListener('change', () => {
-    if (helpCheckbox.checked) updateHelpTimes();
-  });
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    if (!iti.isValidNumber()) {
-      alert("Введите корректный номер телефона.");
-      return;
-    }
-
-    const mainDuration = getMainDurationMinutes();
-    if (mainDuration === null || mainDuration < 1) {
-      alert("Выберите длительность процедуры (не менее 1 минуты).");
-      return;
-    }
-
-    if (helpCheckbox.checked) {
-      const helpDuration = getHelpDurationMinutes();
-      if (helpDuration === null || helpDuration < 1) {
-        alert("Выберите длительность помощи (не менее 1 минуты).");
-        return;
-      }
-    }
-
-    overlaySpinner.classList.add('show');
-    submitButton.disabled = true;
-
-    const phoneFormatted = iti.getNumber();
-    const startTime = new Date(startDateTimeInput.value);
-    const endTime = new Date(startTime.getTime() + mainDuration * 60000);
-
-    const helpNeeded = helpCheckbox.checked;
-    const helpStart = helpStartTimeSelect.value;
-    const helpService = helpServiceSelect.value;
-    const helpDuration = helpNeeded ? getHelpDurationMinutes() : 0;
-
-    const descriptionParts = [];
-    if (helpNeeded) {
-      const helpStartTime = new Date(helpStart);
-      const helpEndTime = new Date(helpStartTime.getTime() + helpDuration * 60000);
-      const helpRange = `HELP (${helpService}) ${helpStartTime.toTimeString().slice(0, 5)}-${helpEndTime.toTimeString().slice(0, 5)}`;
-      descriptionParts.push(helpRange);
-    }
-
-    if (additionalCheckbox.checked && additionalNotesInput.value.trim()) {
-      descriptionParts.push(additionalNotesInput.value.trim());
-    }
-
-    const payload = new URLSearchParams({
-      title: `${mainServiceSelect.value}: ${document.getElementById('clientName').value}`,
-      description: descriptionParts.join('\n'),
-      location: phoneFormatted,
-      startTime: startTime.toISOString(),
-      endTime: endTime.toISOString(),
-      calendar: "master1"
-    });
-
-    fetch("https://script.google.com/macros/s/AKfycbwtkp-QhIFcVBxS4NvGrTWuNFsbz6Gknt2khRMFSIPjCk2UGAEBIfAzzUJVsZ6LyjkLDA/exec", {
-      method: "POST",
-      body: payload
-    })
-    .then(res => res.json())
-    .then(data => {
-      overlaySpinner.classList.remove('show');
-      submitButton.disabled = false;
-      if (data.status === "ok") {
-        successModal.style.display = 'flex';
-      } else {
-        alert("Ошибка: " + data.message);
-      }
-    })
-    .catch(err => {
-      overlaySpinner.classList.remove('show');
-      submitButton.disabled = false;
-      alert("Ошибка отправки: " + err.message);
-    });
-  });
-
-  doneButton.addEventListener('click', () => {
-    successModal.style.display = 'none';
-    form.reset();
-    iti.setNumber('');
-    helpTimeContainer.style.display = 'none';
-    additionalContainer.style.display = 'none';
-  });
 </script>
 
 </body>
